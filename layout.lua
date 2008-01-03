@@ -50,7 +50,7 @@ local updateHealth = function(self, object, unit, min, max)
 	else
 		local c = max - min
 		if(c > 0) then
-			self.value:SetText(("-%d"):format(c))
+			self.value:SetFormattedText("-%d", c)
 		else
 			self.value:SetText(max)
 		end
