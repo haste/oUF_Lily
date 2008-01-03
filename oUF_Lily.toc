@@ -1,0 +1,7 @@
+## Interface: 20300
+## Title: oUF_Lily
+## Author: Haste
+## Notes: oUF layout.
+## Dependencies: oUF
+
+layout.lua
