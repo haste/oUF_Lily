@@ -91,7 +91,7 @@ end
 local func = function(settings, self, unit)
 	self.numBuffs = 16
 	self.menu = menu
-	self.numDebuffs = 16
+	self.numDebuffs = 8
 
 	self:EnableMouse(true)
 	self:SetMovable(true)
