@@ -99,8 +99,6 @@ local func = function(settings, self, unit)
 	self:SetHeight(28)
 	self:SetWidth(200)
 
-	self:SetPoint"CENTER"
-
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
 	self:SetScript("OnLeave", UnitFrame_OnLeave)
 	self:SetScript("OnMouseDown", function(self) if(IsAltKeyDown()) then self:StartMoving() end end)
@@ -181,13 +179,13 @@ end
 oUF:RegisterStyle("Lily", setmetatable({
 	point = "BOTTOM",
 	sortDir = "DESC",
-	yOffset = 30,
+	yOffset = 25,
 	["initial-width"] = 200,
 	["initial-height"] = 28,
 }, {__call = func}))
 
 local player = oUF:Spawn"player"
-player:SetPoint("CENTER", 0, -400)
+player:SetPoint("CENTER", 0, -400) -- damn 1px issue
 local target = oUF:Spawn"target"
 target:SetPoint("CENTER", 0, -350)
 local tot = oUF:Spawn"targettarget"
