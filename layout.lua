@@ -155,6 +155,20 @@ local func = function(settings, self, unit)
 	pp.bg = ppbg
 	self.Power = pp
 
+	local leader = self:CreateTexture(nil, "OVERLAY")
+	leader:SetHeight(16)
+	leader:SetWidth(16)
+	leader:SetPoint("BOTTOM", hp, "TOP", 0, -5)
+	leader:SetTexture"Interface\\GroupFrame\\UI-Group-LeaderIcon"
+	self.Leader = leader
+
+	local ricon = self:CreateTexture(nil, "OVERLAY")
+	ricon:SetHeight(16)
+	ricon:SetWidth(16)
+	ricon:SetPoint("RIGHT", self, "LEFT")
+	ricon:SetTexture"Interface\\TargetingFrame\\UI-RaidTargetingIcons"
+	self.RaidIcon = ricon
+
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("LEFT", 2, -1)
 	name:SetPoint("RIGHT", ppp, "LEFT")
@@ -177,9 +191,9 @@ local func = function(settings, self, unit)
 end
 
 oUF:RegisterStyle("Lily", setmetatable({
-	point = "BOTTOM",
-	sortDir = "DESC",
-	yOffset = 25,
+	["party-point"] = "BOTTOM",
+	["party-sortDir"] = "DESC",
+	["party-yOffset"] = 25,
 	["initial-width"] = 200,
 	["initial-height"] = 28,
 }, {__call = func}))
