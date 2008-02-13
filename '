@@ -38,48 +38,53 @@ local updateName = function(self, event, unit)
 	self.Name:SetText(name)
 end
 
-local updateHealth = function(self, event, bar, unit, min, max)
+local updateHealth = function(self, event, object, unit, min, max)
 	if(UnitIsDead(unit)) then
-		bar:SetValue(0)
-		bar.value:SetText"Dead"
+		self:SetValue(0)
+		self.value:SetText"Dead"
 	elseif(UnitIsGhost(unit)) then
-		bar:SetValue(0)
-		bar.value:SetText"Ghost"
+		self:SetValue(0)
+		self.value:SetText"Ghost"
 	elseif(not UnitIsConnected(unit)) then
-		bar.value:SetText"Offline"
+		self.value:SetText"Offline"
 	else
 		local c = max - min
 		if(c > 0) then
-			bar.value:SetFormattedText("-%d", c)
+			self.value:SetFormattedText("-%d", c)
 		else
-			bar.value:SetText(max)
+			self.value:SetText(max)
 		end
 	end
 
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-		self.Name:SetTextColor(.6, .6, .6)
-		self.Power:SetStatusBarColor(.6, .6, .6)
+		object.Name:SetTextColor(.6, .6, .6)
+		object.Power:SetStatusBarColor(.6, .6, .6)
 	else
-		self:UNIT_NAME_UPDATE(event, unit)
+		object:UpdateName(unit)
 	end
 end
 
-local updatePower = function(self, event, bar, unit, min, max)
+local updatePower = function(self, event, object, unit, min, max)
 	if(min == 0) then
-		bar.value:SetText()
+		self.value:SetText()
 	elseif(UnitIsDead(unit)) then
-		bar:SetValue(0)
+		self:SetValue(0)
 	elseif(UnitIsGhost(unit)) then
-		bar:SetValue(0)
+		self:SetValue(0)
 	else
-		bar.value:SetText(("%d | "):format(min))
+		local c = max - min
+		if(c > 0) then
+			self.value:SetText(("-%d | "):format(c))
+		else
+			self.value:SetText(max.." | ")
+		end
 	end
 
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-		bar:SetStatusBarColor(.6, .6, .6)
+		self:SetStatusBarColor(.6, .6, .6)
 	else
 		local color = UnitIsPlayer(unit) and RAID_CLASS_COLORS[select(2, UnitClass(unit))] or UnitReactionColor[UnitReaction(unit, "player")]
-		if(color) then bar:SetStatusBarColor(color.r, color.g, color.b) end
+		if(color) then self:SetStatusBarColor(color.r, color.g, color.b) end
 	end
 end
 
