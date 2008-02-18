@@ -84,14 +84,12 @@ local updatePower = function(self, event, bar, unit, min, max)
 end
 
 local func = function(settings, self, unit)
-	self.numBuffs = 16
 	self.menu = menu
-	self.numDebuffs = 8
 
 	self:EnableMouse(true)
 	self:SetMovable(true)
 
-	self:SetHeight(28)
+	self:SetHeight(22)
 	self:SetWidth(200)
 
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
@@ -173,12 +171,31 @@ local func = function(settings, self, unit)
 	self.Name = name
 	self.UNIT_NAME_UPDATE = updateName
 
-	if(unit and unit == "target") then
+	if(not unit or unit == "target") then
+		local buffs = CreateFrame("Frame", nil, self)
+		buffs:SetHeight(hp:GetHeight() + pp:GetHeight())
+		buffs:SetWidth(10*self:GetHeight())
+		if(not unit) then
+			buffs.initialAnchor = "BOTTOMLEFT"
+			buffs:SetPoint("LEFT", self, "RIGHT")
+		else
+			buffs.initialAnchor = "BOTTOMRIGHT"
+			buffs.growth = "LEFT"
+			buffs:SetPoint("RIGHT", self, "LEFT")
+		end
+		buffs.size = buffs:GetHeight()
+		buffs.num = 16
+		self.Buffs = buffs
+	end
+
+	if(unit and not (unit == "player" or unit == "targettarget")) then
 		local debuffs = CreateFrame("Frame", nil, self)
-		debuffs:SetHeight(self:GetHeight())
-		debuffs:SetWidth(30)
+		debuffs:SetHeight(hp:GetHeight() + pp:GetHeight())
+		debuffs:SetWidth(10*self:GetHeight())
 		debuffs:SetPoint("LEFT", self, "RIGHT")
-		debuffs.size = 22
+		debuffs.size = debuffs:GetHeight()
+		debuffs.initialAnchor = "BOTTOMLEFT"
+		debuffs.num = 8
 		self.Debuffs = debuffs
 	end
 
@@ -190,7 +207,7 @@ oUF:RegisterStyle("Lily", setmetatable({
 	["party-sortDir"] = "DESC",
 	["party-yOffset"] = 25,
 	["initial-width"] = 200,
-	["initial-height"] = 28,
+	["initial-height"] = 22,
 }, {__call = func}))
 
 local player = oUF:Spawn"player"
