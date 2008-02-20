@@ -83,6 +83,10 @@ local updatePower = function(self, event, bar, unit, min, max)
 	end
 end
 
+local auraIcon = function(self, button)
+	button.icon:SetTexCoord(.07, .93, .07, .93)
+end
+
 local func = function(settings, self, unit)
 	self.menu = menu
 
@@ -177,14 +181,16 @@ local func = function(settings, self, unit)
 		buffs:SetWidth(10*self:GetHeight())
 		if(not unit) then
 			buffs.initialAnchor = "BOTTOMLEFT"
+			buffs.filter = true
+			buffs.num = 4
 			buffs:SetPoint("LEFT", self, "RIGHT")
 		else
 			buffs.initialAnchor = "BOTTOMRIGHT"
-			buffs.growth = "LEFT"
+			buffs.num = 8
+			buffs["growth-x"] = "LEFT"
 			buffs:SetPoint("RIGHT", self, "LEFT")
 		end
 		buffs.size = buffs:GetHeight()
-		buffs.num = 16
 		self.Buffs = buffs
 	end
 
@@ -199,6 +205,8 @@ local func = function(settings, self, unit)
 		self.Debuffs = debuffs
 	end
 
+	self.PostCreateAuraIcon = auraIcon
+
 	return self
 end
 
@@ -211,9 +219,9 @@ oUF:RegisterStyle("Lily", setmetatable({
 }, {__call = func}))
 
 local player = oUF:Spawn"player"
-player:SetPoint("CENTER", 0, -400) -- damn 1px issue
+player:SetPoint("CENTER", 0, -400)
 local target = oUF:Spawn"target"
-target:SetPoint("CENTER", 0, -350)
+target:SetPoint("CENTER", 0, -351)
 local tot = oUF:Spawn"targettarget"
 tot:SetPoint("CENTER", 0, -300)
 local party = oUF:Spawn"party"
