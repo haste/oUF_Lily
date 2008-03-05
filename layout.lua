@@ -67,12 +67,12 @@ end
 local updatePower = function(self, event, bar, unit, min, max)
 	if(min == 0) then
 		bar.value:SetText()
-	elseif(UnitIsDead(unit)) then
+	elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
 		bar:SetValue(0)
-	elseif(UnitIsGhost(unit)) then
-		bar:SetValue(0)
+	elseif(not UnitIsConnected(unit)) then
+		bar.value:SetText()
 	else
-		bar.value:SetText(("%d | "):format(min))
+		bar.value:SetFormattedText("%d | ", min)
 	end
 
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
@@ -181,7 +181,6 @@ local func = function(settings, self, unit)
 		buffs:SetWidth(10*self:GetHeight())
 		if(not unit) then
 			buffs.initialAnchor = "BOTTOMLEFT"
-			buffs.filter = true
 			buffs.num = 4
 			buffs:SetPoint("LEFT", self, "RIGHT")
 		else
@@ -190,16 +189,16 @@ local func = function(settings, self, unit)
 			buffs["growth-x"] = "LEFT"
 			buffs:SetPoint("RIGHT", self, "LEFT")
 		end
-		buffs.size = buffs:GetHeight()
+		buffs.size = math.floor(buffs:GetHeight() + .5)
 		self.Buffs = buffs
 	end
 
-	if(unit and not (unit == "player" or unit == "targettarget")) then
+	if(not (unit == "targettarget" or unit == "player")) then
 		local debuffs = CreateFrame("Frame", nil, self)
 		debuffs:SetHeight(hp:GetHeight() + pp:GetHeight())
 		debuffs:SetWidth(10*self:GetHeight())
 		debuffs:SetPoint("LEFT", self, "RIGHT")
-		debuffs.size = debuffs:GetHeight()
+		debuffs.size = math.floor(debuffs:GetHeight() + .5)
 		debuffs.initialAnchor = "BOTTOMLEFT"
 		debuffs.num = 8
 		self.Debuffs = debuffs
