@@ -193,7 +193,7 @@ local func = function(settings, self, unit)
 		self.Buffs = buffs
 	end
 
-	if(not (unit == "targettarget" or unit == "player")) then
+	if(unit and not (unit == "targettarget" or unit == "player")) then
 		local debuffs = CreateFrame("Frame", nil, self)
 		debuffs:SetHeight(hp:GetHeight() + pp:GetHeight())
 		debuffs:SetWidth(10*self:GetHeight())
@@ -204,15 +204,21 @@ local func = function(settings, self, unit)
 		self.Debuffs = debuffs
 	end
 
+	if(not unit) then
+		self.Range = true
+		self.inRangeAlpha = 1
+		self.outsideRangeAlpha = .5
+	end
+
 	self.PostCreateAuraIcon = auraIcon
 
 	return self
 end
 
 oUF:RegisterStyle("Lily", setmetatable({
-	["party-point"] = "BOTTOM",
-	["party-sortDir"] = "DESC",
-	["party-yOffset"] = 25,
+	["party-yOffset"] = -25,
+	["party-showRaid"] = true,
+
 	["initial-width"] = 200,
 	["initial-height"] = 22,
 }, {__call = func}))
