@@ -223,6 +223,8 @@ oUF:RegisterStyle("Lily", setmetatable({
 	["initial-height"] = 22,
 }, {__call = func}))
 
+local focus = oUF:Spawn"focus"
+focus:SetPoint("CENTER", 0, -450)
 local player = oUF:Spawn"player"
 player:SetPoint("CENTER", 0, -400)
 local target = oUF:Spawn"target"
