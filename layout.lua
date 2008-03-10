@@ -217,7 +217,6 @@ end
 
 oUF:RegisterStyle("Lily", setmetatable({
 	["party-yOffset"] = -25,
-	["party-showRaid"] = true,
 
 	["initial-width"] = 200,
 	["initial-height"] = 22,
