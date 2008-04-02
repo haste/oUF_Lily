@@ -90,16 +90,8 @@ end
 local func = function(settings, self, unit)
 	self.menu = menu
 
-	self:EnableMouse(true)
-	self:SetMovable(true)
-
-	self:SetHeight(22)
-	self:SetWidth(200)
-
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
 	self:SetScript("OnLeave", UnitFrame_OnLeave)
-	self:SetScript("OnMouseDown", function(self) if(IsAltKeyDown()) then self:StartMoving() end end)
-	self:SetScript("OnMouseUp", function(self) self:StopMovingOrSizing() end)
 
 	self:RegisterForClicks"anyup"
 	self:SetAttribute("*type2", "menu")
@@ -216,8 +208,6 @@ local func = function(settings, self, unit)
 end
 
 oUF:RegisterStyle("Lily", setmetatable({
-	["party-yOffset"] = -25,
-
 	["initial-width"] = 200,
 	["initial-height"] = 22,
 }, {__call = func}))
@@ -232,3 +222,4 @@ local tot = oUF:Spawn"targettarget"
 tot:SetPoint("CENTER", 0, -300)
 local party = oUF:Spawn"party"
 party:SetPoint("TOPLEFT", 30, -30)
+party:SetManyAttributes("yOffset", -25)
