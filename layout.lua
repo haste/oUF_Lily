@@ -212,6 +212,16 @@ oUF:RegisterStyle("Lily", setmetatable({
 	["initial-height"] = 22,
 }, {__call = func}))
 
+--[[
+-- oUF does to this for, but only for the first layout registered. I'm mainly
+-- adding it here so people know about it, especially since it's required for
+-- layouts using different styles between party/partypet/raid/raidpet. It is
+-- however smart to execute this function regardless.
+--
+-- There is a possibility that another layout has been registered before yours.
+--]]
+oUF:SetActiveStyle"Lily"
+
 local focus = oUF:Spawn"focus"
 focus:SetPoint("CENTER", 0, -450)
 local player = oUF:Spawn"player"
