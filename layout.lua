@@ -13,6 +13,8 @@ local UnitClass = UnitClass
 local UnitReactionColor = UnitReactionColor
 local UnitReaction = UnitReaction
 
+local height, width = 22, 220
+
 local menu = function(self)
 	local unit = self.unit:sub(1, -2)
 	local cunit = self.unit:gsub("(.)", string.upper, 1)
@@ -170,7 +172,7 @@ local func = function(settings, self, unit)
 	if(not unit or unit == "target") then
 		local buffs = CreateFrame("Frame", nil, self)
 		buffs:SetHeight(hp:GetHeight() + pp:GetHeight())
-		buffs:SetWidth(10*self:GetHeight())
+		buffs:SetWidth(10*height)
 		if(not unit) then
 			buffs.initialAnchor = "BOTTOMLEFT"
 			buffs.num = 4
@@ -188,7 +190,7 @@ local func = function(settings, self, unit)
 	if(unit and not (unit == "targettarget" or unit == "player")) then
 		local debuffs = CreateFrame("Frame", nil, self)
 		debuffs:SetHeight(hp:GetHeight() + pp:GetHeight())
-		debuffs:SetWidth(10*self:GetHeight())
+		debuffs:SetWidth(10*height)
 		debuffs:SetPoint("LEFT", self, "RIGHT")
 		debuffs.size = math.floor(debuffs:GetHeight() + .5)
 		debuffs.initialAnchor = "BOTTOMLEFT"
@@ -208,8 +210,8 @@ local func = function(settings, self, unit)
 end
 
 oUF:RegisterStyle("Lily", setmetatable({
-	["initial-width"] = 200,
-	["initial-height"] = 22,
+	["initial-width"] = width,
+	["initial-height"] = height,
 }, {__call = func}))
 
 --[[
