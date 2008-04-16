@@ -33,7 +33,7 @@ local updateName = function(self, event, unit)
 		local name = UnitName(unit)
 		local index = GetRaidTargetIndex(self.unit)
 		if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-			self.Name:SetTextColor(.6, .6, .6)	
+			self.Name:SetTextColor(.6, .6, .6)
 		else
 			local color = UnitIsPlayer(unit) and RAID_CLASS_COLORS[select(2, UnitClass(unit))] or UnitReactionColor[UnitReaction(unit, "player")]
 			if(color) then self.Name:SetTextColor(color.r, color.g, color.b) end
