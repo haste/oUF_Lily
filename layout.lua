@@ -9,6 +9,7 @@ local UnitIsDead = UnitIsDead
 local UnitIsGhost = UnitIsGhost
 local UnitIsConnected = UnitIsConnected
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local ICON_LIST = ICON_LIST
 local UnitClass = UnitClass
 local UnitReactionColor = UnitReactionColor
 local UnitReaction = UnitReaction
@@ -27,17 +28,23 @@ local menu = function(self)
 end
 
 local updateName = function(self, event, unit)
-	if(self.unit ~= unit) then return end
+	if(self.unit == unit or not unit) then
+		local unit = unit or self.unit
+		local name = UnitName(unit)
+		local index = GetRaidTargetIndex(self.unit)
+		if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
+			self.Name:SetTextColor(.6, .6, .6)	
+		else
+			local color = UnitIsPlayer(unit) and RAID_CLASS_COLORS[select(2, UnitClass(unit))] or UnitReactionColor[UnitReaction(unit, "player")]
+			if(color) then self.Name:SetTextColor(color.r, color.g, color.b) end
+		end
 
-	local name = UnitName(unit)
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-		self.Name:SetTextColor(.6, .6, .6)	
-	else
-		local color = UnitIsPlayer(unit) and RAID_CLASS_COLORS[select(2, UnitClass(unit))] or UnitReactionColor[UnitReaction(unit, "player")]
-		if(color) then self.Name:SetTextColor(color.r, color.g, color.b) end
+		if(index) then
+			self.Name:SetText(ICON_LIST[index].."22|t"..name)
+		else
+			self.Name:SetText(name)
+		end
 	end
-
-	self.Name:SetText(name)
 end
 
 local updateHealth = function(self, event, bar, unit, min, max)
@@ -153,13 +160,6 @@ local func = function(settings, self, unit)
 	leader:SetTexture"Interface\\GroupFrame\\UI-Group-LeaderIcon"
 	self.Leader = leader
 
-	local ricon = self:CreateTexture(nil, "OVERLAY")
-	ricon:SetHeight(16)
-	ricon:SetWidth(16)
-	ricon:SetPoint("RIGHT", self, "LEFT")
-	ricon:SetTexture"Interface\\TargetingFrame\\UI-RaidTargetingIcons"
-	self.RaidIcon = ricon
-
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("LEFT", 2, -1)
 	name:SetPoint("RIGHT", ppp, "LEFT")
@@ -203,6 +203,9 @@ local func = function(settings, self, unit)
 		self.inRangeAlpha = 1
 		self.outsideRangeAlpha = .5
 	end
+
+	self.RAID_TARGET_UPDATE = updateName
+	self:RegisterEvent"RAID_TARGET_UPDATE"
 
 	self.PostCreateAuraIcon = auraIcon
 
