@@ -28,7 +28,7 @@ local menu = function(self)
 end
 
 local updateName = function(self, event, unit)
-	if(self.unit == unit or not unit) then
+	if(self.unit == unit or (not unit and self.unit)) then
 		local unit = unit or self.unit
 		local name = UnitName(unit)
 		local index = GetRaidTargetIndex(self.unit)
