@@ -235,6 +235,7 @@ local target = oUF:Spawn"target"
 target:SetPoint("CENTER", 0, -351)
 local tot = oUF:Spawn"targettarget"
 tot:SetPoint("CENTER", 0, -300)
-local party = oUF:Spawn"party"
+local party = oUF:Spawn("header", "oUF_Party")
 party:SetPoint("TOPLEFT", 30, -30)
-party:SetManyAttributes("yOffset", -25)
+party:SetManyAttributes("showParty", true, "yOffset", -25)
+party:Show()
