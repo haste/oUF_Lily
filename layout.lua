@@ -28,10 +28,7 @@ local menu = function(self)
 end
 
 local updateName = function(self, event, unit)
-	if(self.unit == unit or (not unit and self.unit)) then
-		local unit = unit or self.unit
-		local name = UnitName(unit)
-		local index = GetRaidTargetIndex(self.unit)
+	if(self.unit == unit) then
 		if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
 			self.Name:SetTextColor(.6, .6, .6)
 		else
@@ -39,11 +36,16 @@ local updateName = function(self, event, unit)
 			if(color) then self.Name:SetTextColor(color.r, color.g, color.b) end
 		end
 
-		if(index) then
-			self.Name:SetText(ICON_LIST[index].."22|t"..name)
-		else
-			self.Name:SetText(name)
-		end
+		self.Name:SetText(UnitName(unit))
+	end
+end
+
+local updateRaidIcon = function(self, event)
+	local index = GetRaidTargetIndex(self.unit)
+	if(index) then
+		self.RaidIcon:SetText(ICON_LIST[index].."22|t")
+	else
+		self.RaidIcon:SetText()
 	end
 end
 
@@ -160,8 +162,16 @@ local func = function(settings, self, unit)
 	leader:SetTexture"Interface\\GroupFrame\\UI-Group-LeaderIcon"
 	self.Leader = leader
 
+	local ricon = hp:CreateFontString(nil, "OVERLAY")
+	ricon:SetPoint("LEFT", 2, 4)
+	ricon:SetJustifyH"LEFT"
+	ricon:SetFontObject(GameFontNormalSmall)
+	ricon:SetTextColor(1, 1, 1)
+	self.RaidIcon = ricon
+	self.RAID_TARGET_UPDATE = updateRaidIcon
+
 	local name = hp:CreateFontString(nil, "OVERLAY")
-	name:SetPoint("LEFT", 2, -1)
+	name:SetPoint("LEFT", ricon, "RIGHT", 0, -5)
 	name:SetPoint("RIGHT", ppp, "LEFT")
 	name:SetJustifyH"LEFT"
 	name:SetFontObject(GameFontNormalSmall)
@@ -204,7 +214,6 @@ local func = function(settings, self, unit)
 		self.outsideRangeAlpha = .5
 	end
 
-	self.RAID_TARGET_UPDATE = updateName
 	self:RegisterEvent"RAID_TARGET_UPDATE"
 
 	self.PostCreateAuraIcon = auraIcon
