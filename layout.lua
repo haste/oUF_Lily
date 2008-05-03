@@ -179,30 +179,35 @@ local func = function(settings, self, unit)
 	self.Name = name
 	self.UNIT_NAME_UPDATE = updateName
 
-	if(not unit or unit == "target") then
+	if(not unit) then
+		local auras = CreateFrame("Frame", nil, self)
+		auras:SetHeight(hp:GetHeight() + pp:GetHeight())
+		auras:SetWidth(8*height)
+		auras:SetPoint("LEFT", self, "RIGHT")
+		auras.size = height
+		auras.numBuffs = 4
+		auras.numDebuffs = 4
+		self.Auras = auras
+	end
+
+	if(unit == "target") then
 		local buffs = CreateFrame("Frame", nil, self)
-		buffs:SetHeight(hp:GetHeight() + pp:GetHeight())
-		buffs:SetWidth(10*height)
-		if(not unit) then
-			buffs.initialAnchor = "BOTTOMLEFT"
-			buffs.num = 4
-			buffs:SetPoint("LEFT", self, "RIGHT")
-		else
-			buffs.initialAnchor = "BOTTOMRIGHT"
-			buffs.num = 8
-			buffs["growth-x"] = "LEFT"
-			buffs:SetPoint("RIGHT", self, "LEFT")
-		end
-		buffs.size = math.floor(buffs:GetHeight() + .5)
+		buffs:SetHeight(height)
+		buffs:SetWidth(8*height)
+		buffs.initialAnchor = "BOTTOMRIGHT"
+		buffs.num = 8
+		buffs["growth-x"] = "LEFT"
+		buffs:SetPoint("RIGHT", self, "LEFT")
+		buffs.size = height
 		self.Buffs = buffs
 	end
 
 	if(unit and not (unit == "targettarget" or unit == "player")) then
 		local debuffs = CreateFrame("Frame", nil, self)
-		debuffs:SetHeight(hp:GetHeight() + pp:GetHeight())
+		debuffs:SetHeight(height)
 		debuffs:SetWidth(10*height)
 		debuffs:SetPoint("LEFT", self, "RIGHT")
-		debuffs.size = math.floor(debuffs:GetHeight() + .5)
+		debuffs.size = height
 		debuffs.initialAnchor = "BOTTOMLEFT"
 		debuffs.num = 8
 		self.Debuffs = debuffs
