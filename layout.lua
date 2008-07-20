@@ -185,6 +185,7 @@ local func = function(settings, self, unit)
 		auras:SetWidth(8*height)
 		auras:SetPoint("LEFT", self, "RIGHT")
 		auras.size = height
+		auras.gap = true
 		auras.numBuffs = 4
 		auras.numDebuffs = 4
 		self.Auras = auras
