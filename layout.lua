@@ -27,15 +27,24 @@ local menu = function(self)
 	end
 end
 
+local updateColor = function(self, element, unit, func)
+	local color
+	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
+		return element[func](element, .6, .6, .6)
+	elseif(unit == 'pet') then
+		color = self.colors.happiness[GetPetHappiness()]
+	elseif(UnitIsPlayer(unit)) then
+		color = RAID_CLASS_COLORS[select(2, UnitClass(unit))]
+	else
+		color = UnitReactionColor[UnitReaction(unit, "player")]
+	end
+
+	if(color) then element[func](element, color.r, color.g, color.b) end
+end
+
 local updateName = function(self, event, unit)
 	if(self.unit == unit) then
-		if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-			self.Name:SetTextColor(.6, .6, .6)
-		else
-			local color = UnitIsPlayer(unit) and RAID_CLASS_COLORS[select(2, UnitClass(unit))] or UnitReactionColor[UnitReaction(unit, "player")]
-			if(color) then self.Name:SetTextColor(color.r, color.g, color.b) end
-		end
-
+		updateColor(self, self.Name, unit, 'SetTextColor')
 		self.Name:SetText(UnitName(unit))
 	end
 end
@@ -86,12 +95,7 @@ local updatePower = function(self, event, bar, unit, min, max)
 		bar.value:SetFormattedText("%d | ", min)
 	end
 
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-		bar:SetStatusBarColor(.6, .6, .6)
-	else
-		local color = UnitIsPlayer(unit) and RAID_CLASS_COLORS[select(2, UnitClass(unit))] or UnitReactionColor[UnitReaction(unit, "player")]
-		if(color) then bar:SetStatusBarColor(color.r, color.g, color.b) end
-	end
+	updateColor(self, bar, unit, 'SetStatusBarColor')
 end
 
 local auraIcon = function(self, button)
@@ -214,6 +218,16 @@ local func = function(settings, self, unit)
 		self.Debuffs = debuffs
 	end
 
+	if(unit == 'pet') then
+		self:RegisterEvent"UNIT_HAPPINESS"
+		self.UNIT_HAPPINESS = function(self, event, unit)
+			if(unit == self.unit) then
+				updateColor(self, name, unit, 'SetTextColor')
+				updateColor(self, pp, unit, 'SetStatusBarColor')
+			end
+		end
+	end
+
 	if(not unit) then
 		self.Range = true
 		self.inRangeAlpha = 1
@@ -242,8 +256,14 @@ oUF:RegisterStyle("Lily", setmetatable({
 --]]
 oUF:SetActiveStyle"Lily"
 
+local f, p = -450, -500
+if(select(2, UnitClass'player') == 'HUNTER') then
+	f, p = p, f
+	local pet = oUF:Spawn'pet'
+	pet:SetPoint('CENTER', 0, p)
+end
 local focus = oUF:Spawn"focus"
-focus:SetPoint("CENTER", 0, -450)
+focus:SetPoint("CENTER", 0, f)
 local player = oUF:Spawn"player"
 player:SetPoint("CENTER", 0, -400)
 local target = oUF:Spawn"target"
