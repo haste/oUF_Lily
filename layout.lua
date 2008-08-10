@@ -58,7 +58,7 @@ local updateRaidIcon = function(self, event)
 	end
 end
 
-local updateHealth = function(self, event, bar, unit, min, max)
+local updateHealth = function(self, event, unit, bar, min, max)
 	if(UnitIsDead(unit)) then
 		bar:SetValue(0)
 		bar.value:SetText"Dead"
@@ -84,7 +84,7 @@ local updateHealth = function(self, event, bar, unit, min, max)
 	end
 end
 
-local updatePower = function(self, event, bar, unit, min, max)
+local updatePower = function(self, event, unit, bar, min, max)
 	if(min == 0) then
 		bar.value:SetText()
 	elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
@@ -188,6 +188,8 @@ local func = function(settings, self, unit)
 		auras:SetHeight(hp:GetHeight() + pp:GetHeight())
 		auras:SetWidth(8*height)
 		auras:SetPoint("LEFT", self, "RIGHT")
+
+		auras.showDebuffType = true
 		auras.size = height
 		auras.gap = true
 		auras.numBuffs = 4
@@ -212,6 +214,8 @@ local func = function(settings, self, unit)
 		debuffs:SetHeight(height)
 		debuffs:SetWidth(10*height)
 		debuffs:SetPoint("LEFT", self, "RIGHT")
+
+		debuffs.showDebuffType = true
 		debuffs.size = height
 		debuffs.initialAnchor = "BOTTOMLEFT"
 		debuffs.num = 8
