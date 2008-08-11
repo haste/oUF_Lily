@@ -260,6 +260,7 @@ oUF:RegisterStyle("Lily", setmetatable({
 --]]
 oUF:SetActiveStyle"Lily"
 
+-- :Spawn(unit, frame_name, isPet) --isPet is only used on headers.
 local f, p = -450, -500
 if(select(2, UnitClass'player') == 'HUNTER') then
 	f, p = p, f
