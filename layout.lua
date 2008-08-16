@@ -58,6 +58,14 @@ local updateRaidIcon = function(self, event)
 	end
 end
 
+local siValue = function(val)
+	if(val >= 1e4) then
+		return ("%.1f"):format(val / 1e3):gsub('%.', 'k')
+	else
+		return val
+	end
+end
+
 local updateHealth = function(self, event, unit, bar, min, max)
 	if(UnitIsDead(unit)) then
 		bar:SetValue(0)
@@ -68,12 +76,14 @@ local updateHealth = function(self, event, unit, bar, min, max)
 	elseif(not UnitIsConnected(unit)) then
 		bar.value:SetText"Offline"
 	else
-		local c = max - min
-		if(c > 0) then
-			bar.value:SetFormattedText("-%d", c)
+		if(not UnitIsFriend('player', unit)) then
+			bar.value:SetFormattedText('%s', siValue(min))
+		elseif(min ~= 0 and min ~= max) then
+			bar.value:SetFormattedText("-%s", siValue(max - min))
 		else
 			bar.value:SetText(max)
 		end
+
 	end
 
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
@@ -92,7 +102,7 @@ local updatePower = function(self, event, unit, bar, min, max)
 	elseif(not UnitIsConnected(unit)) then
 		bar.value:SetText()
 	else
-		bar.value:SetFormattedText("%d | ", min)
+		bar.value:SetFormattedText("%d | ", siValue(min))
 	end
 
 	updateColor(self, bar, unit, 'SetStatusBarColor')
