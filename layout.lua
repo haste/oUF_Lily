@@ -112,7 +112,7 @@ local auraIcon = function(self, button)
 	button.icon:SetTexCoord(.07, .93, .07, .93)
 end
 
-local func = function(settings, self, unit)
+local func = function(self, unit)
 	self.menu = menu
 
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
@@ -248,6 +248,9 @@ local func = function(settings, self, unit)
 		self.outsideRangeAlpha = .5
 	end
 
+	self:SetAttribute('initial-height', height)
+	self:SetAttribute('initial-width', width)
+
 	self:RegisterEvent"RAID_TARGET_UPDATE"
 
 	self.PostCreateAuraIcon = auraIcon
@@ -255,10 +258,7 @@ local func = function(settings, self, unit)
 	return self
 end
 
-oUF:RegisterStyle("Lily", setmetatable({
-	["initial-width"] = width,
-	["initial-height"] = height,
-}, {__call = func}))
+oUF:RegisterStyle("Lily", func)
 
 --[[
 -- oUF does to this for, but only for the first layout registered. I'm mainly
