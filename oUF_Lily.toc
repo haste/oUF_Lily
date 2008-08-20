@@ -1,8 +1,8 @@
 ## Interface: 20400
 ## Title: oUF_Lily
 ## Author: Haste
-## Version: 1.0
+## Version: 1.1
 ## Notes: oUF layout.
 ## Dependencies: oUF
 
-layout.lua
+lily.lua
