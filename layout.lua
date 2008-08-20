@@ -83,7 +83,6 @@ local updateHealth = function(self, event, unit, bar, min, max)
 		else
 			bar.value:SetText(max)
 		end
-
 	end
 
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
@@ -102,10 +101,8 @@ local updatePower = function(self, event, unit, bar, min, max)
 	elseif(not UnitIsConnected(unit)) then
 		bar.value:SetText()
 	else
-		bar.value:SetFormattedText("%d | ", siValue(min))
+		bar.value:SetFormattedText("%s | ", siValue(min))
 	end
-
-	updateColor(self, bar, unit, 'SetStatusBarColor')
 end
 
 local auraIcon = function(self, button)
@@ -150,6 +147,11 @@ local func = function(self, unit)
 	pp:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
 	pp:SetStatusBarColor(.25, .25, .35)
 
+	pp.colorTapping = true
+	pp.colorHappiness = true
+	pp.colorClass = true
+	pp.colorReaction = true
+
 	pp:SetParent(self)
 	pp:SetPoint"LEFT"
 	pp:SetPoint"RIGHT"
@@ -167,7 +169,7 @@ local func = function(self, unit)
 	pp.value = ppp
 	pp.bg = ppbg
 	self.Power = pp
-	self.OverrideUpdatePower = updatePower
+	self.PostUpdatePower = updatePower
 
 	local leader = self:CreateTexture(nil, "OVERLAY")
 	leader:SetHeight(16)
@@ -234,12 +236,7 @@ local func = function(self, unit)
 
 	if(unit == 'pet') then
 		self:RegisterEvent"UNIT_HAPPINESS"
-		self.UNIT_HAPPINESS = function(self, event, unit)
-			if(unit == self.unit) then
-				updateColor(self, name, unit, 'SetTextColor')
-				updateColor(self, pp, unit, 'SetStatusBarColor')
-			end
-		end
+		self.UNIT_HAPPINESS = updateName
 	end
 
 	if(not unit) then
