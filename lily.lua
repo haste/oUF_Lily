@@ -8,7 +8,6 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsDead = UnitIsDead
 local UnitIsGhost = UnitIsGhost
 local UnitIsConnected = UnitIsConnected
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local ICON_LIST = ICON_LIST
 local UnitClass = UnitClass
 local UnitReactionColor = UnitReactionColor
@@ -27,24 +26,28 @@ local menu = function(self)
 	end
 end
 
-local updateColor = function(self, element, unit, func)
-	local color
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-		return element[func](element, .6, .6, .6)
-	elseif(unit == 'pet') then
-		color = self.colors.happiness[GetPetHappiness()]
-	elseif(UnitIsPlayer(unit)) then
-		color = RAID_CLASS_COLORS[select(2, UnitClass(unit))]
-	else
-		color = UnitReactionColor[UnitReaction(unit, "player")]
-	end
-
-	if(color) then element[func](element, color.r, color.g, color.b) end
-end
-
 local updateName = function(self, event, unit)
 	if(self.unit == unit) then
-		updateColor(self, self.Name, unit, 'SetTextColor')
+		local r, g, b, t
+		if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
+			r, g, b = .6, .6, .6
+		elseif(unit == 'pet') then
+			t = self.colors.happiness[GetPetHappiness()]
+		elseif(UnitIsPlayer(unit)) then
+			local _, class = UnitClass(unit)
+			t = self.colors.class[class]
+		else
+			t = self.colors.reaction[UnitReaction(unit, "player")]
+		end
+
+		if(t) then
+			r, g, b = t[1], t[2], t[3]
+		end
+
+		if(r) then
+			self.Name:SetTextColor(r, g, b)
+		end
+
 		self.Name:SetText(UnitName(unit))
 	end
 end
@@ -85,12 +88,8 @@ local updateHealth = function(self, event, unit, bar, min, max)
 		end
 	end
 
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
-		self.Name:SetTextColor(.6, .6, .6)
-		self.Power:SetStatusBarColor(.6, .6, .6)
-	else
-		self:UNIT_NAME_UPDATE(event, unit)
-	end
+	bar:SetStatusBarColor(.25, .25, .35)
+	self:UNIT_NAME_UPDATE(event, unit)
 end
 
 local updatePower = function(self, event, unit, bar, min, max)
@@ -106,6 +105,10 @@ local updatePower = function(self, event, unit, bar, min, max)
 end
 
 local auraIcon = function(self, button)
+	local count = button.count
+	count:ClearAllPoints()
+	count:SetPoint"BOTTOM"
+
 	button.icon:SetTexCoord(.07, .93, .07, .93)
 end
 
@@ -121,7 +124,6 @@ local func = function(self, unit)
 	local hp = CreateFrame"StatusBar"
 	hp:SetHeight(20)
 	hp:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
-	hp:SetStatusBarColor(.25, .25, .35)
 
 	hp:SetParent(self)
 	hp:SetPoint"TOP"
@@ -145,7 +147,6 @@ local func = function(self, unit)
 	local pp = CreateFrame"StatusBar"
 	pp:SetHeight(2)
 	pp:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
-	pp:SetStatusBarColor(.25, .25, .35)
 
 	pp.colorTapping = true
 	pp.colorHappiness = true
@@ -170,6 +171,16 @@ local func = function(self, unit)
 	pp.bg = ppbg
 	self.Power = pp
 	self.PostUpdatePower = updatePower
+
+	if(unit ~= 'targettarget') then
+		local cb = CreateFrame"StatusBar"
+		cb:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
+		cb:SetStatusBarColor(1, .25, .35, .5)
+		cb:SetParent(self)
+		cb:SetAllPoints(hp)
+		cb:SetToplevel(true)
+		self.Castbar = cb
+	end
 
 	local leader = self:CreateTexture(nil, "OVERLAY")
 	leader:SetHeight(16)
