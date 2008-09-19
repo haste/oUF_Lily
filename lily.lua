@@ -3,15 +3,7 @@
   without any conditions, unless such conditions are required by law.
 ---------------------------------------------------------------------------]]
 
-local select = select
-local UnitIsPlayer = UnitIsPlayer
-local UnitIsDead = UnitIsDead
-local UnitIsGhost = UnitIsGhost
-local UnitIsConnected = UnitIsConnected
-local ICON_LIST = ICON_LIST
-local UnitClass = UnitClass
-local UnitReactionColor = UnitReactionColor
-local UnitReaction = UnitReaction
+local wotlk = select(4, GetBuildInfo()) >= 3e4
 
 local height, width = 22, 220
 
@@ -37,7 +29,11 @@ local updateName = function(self, event, unit)
 			local _, class = UnitClass(unit)
 			t = self.colors.class[class]
 		else
-			t = self.colors.reaction[UnitReaction(unit, "player")]
+			if(not wotlk) then
+				t = self.colors.reaction[UnitReaction(unit, "player")]
+			else
+				r, g, b = UnitSelectionColor(unit)
+			end
 		end
 
 		if(t) then
