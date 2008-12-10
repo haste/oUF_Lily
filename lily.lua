@@ -201,6 +201,7 @@ local func = function(self, unit)
 	name:SetTextColor(1, 1, 1)
 	self.Name = name
 	self.UNIT_NAME_UPDATE = updateName
+	self:RegisterEvent'UNIT_NAME_UPDATE'
 
 	if(not unit) then
 		local auras = CreateFrame("Frame", nil, self)
