@@ -3,8 +3,6 @@
   without any conditions, unless such conditions are required by law.
 ---------------------------------------------------------------------------]]
 
-local wotlk = select(4, GetBuildInfo()) >= 3e4
-
 local height, width = 22, 220
 
 local menu = function(self)
@@ -29,11 +27,7 @@ local updateName = function(self, event, unit)
 			local _, class = UnitClass(unit)
 			t = self.colors.class[class]
 		else
-			if(not wotlk) then
-				t = self.colors.reaction[UnitReaction(unit, "player")]
-			else
-				r, g, b = UnitSelectionColor(unit)
-			end
+			r, g, b = UnitSelectionColor(unit)
 		end
 
 		if(t) then
@@ -121,6 +115,8 @@ local func = function(self, unit)
 	hp:SetHeight(20)
 	hp:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
 
+	hp.frequentUpdates = true
+
 	hp:SetParent(self)
 	hp:SetPoint"TOP"
 	hp:SetPoint"LEFT"
@@ -144,6 +140,7 @@ local func = function(self, unit)
 	pp:SetHeight(2)
 	pp:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
 
+	pp.frequentUpdates = true
 	pp.colorTapping = true
 	pp.colorHappiness = true
 	pp.colorClass = true
@@ -191,7 +188,7 @@ local func = function(self, unit)
 	ricon:SetFontObject(GameFontNormalSmall)
 	ricon:SetTextColor(1, 1, 1)
 	self.RaidIcon = ricon
-	self.RAID_TARGET_UPDATE = updateRaidIcon
+	self:RegisterEvent("RAID_TARGET_UPDATE", updateRaidIcon)
 
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("LEFT", ricon, "RIGHT", 0, -5)
@@ -200,8 +197,7 @@ local func = function(self, unit)
 	name:SetFontObject(GameFontNormalSmall)
 	name:SetTextColor(1, 1, 1)
 	self.Name = name
-	self.UNIT_NAME_UPDATE = updateName
-	self:RegisterEvent'UNIT_NAME_UPDATE'
+	self:RegisterEvent('UNIT_NAME_UPDATE', updateName)
 
 	if(not unit) then
 		local auras = CreateFrame("Frame", nil, self)
@@ -243,8 +239,7 @@ local func = function(self, unit)
 	end
 
 	if(unit == 'pet') then
-		self:RegisterEvent"UNIT_HAPPINESS"
-		self.UNIT_HAPPINESS = updateName
+		self:RegisterEvent("UNIT_HAPPINESS", updateName)
 	end
 
 	if(not unit) then
@@ -255,8 +250,6 @@ local func = function(self, unit)
 
 	self:SetAttribute('initial-height', height)
 	self:SetAttribute('initial-width', width)
-
-	self:RegisterEvent"RAID_TARGET_UPDATE"
 
 	self.PostCreateAuraIcon = auraIcon
 
