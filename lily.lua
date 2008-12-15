@@ -42,12 +42,12 @@ local updateName = function(self, event, unit)
 	end
 end
 
-local updateRaidIcon = function(self, event)
+local updateRIcon = function(self, event)
 	local index = GetRaidTargetIndex(self.unit)
 	if(index) then
-		self.RaidIcon:SetText(ICON_LIST[index].."22|t")
+		self.RIcon:SetText(ICON_LIST[index].."22|t")
 	else
-		self.RaidIcon:SetText()
+		self.RIcon:SetText()
 	end
 end
 
@@ -187,8 +187,8 @@ local func = function(self, unit)
 	ricon:SetJustifyH"LEFT"
 	ricon:SetFontObject(GameFontNormalSmall)
 	ricon:SetTextColor(1, 1, 1)
-	self.RaidIcon = ricon
-	self:RegisterEvent("RAID_TARGET_UPDATE", updateRaidIcon)
+	self.RIcon = ricon
+	self:RegisterEvent("RAID_TARGET_UPDATE", updateRIcon)
 
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("LEFT", ricon, "RIGHT", 0, -5)
