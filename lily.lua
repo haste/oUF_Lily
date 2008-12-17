@@ -269,14 +269,10 @@ oUF:RegisterStyle("Lily", func)
 oUF:SetActiveStyle"Lily"
 
 -- :Spawn(unit, frame_name, isPet) --isPet is only used on headers.
-local f, p = -450, -500
-if(select(2, UnitClass'player') == 'HUNTER') then
-	f, p = p, f
-	local pet = oUF:Spawn'pet'
-	pet:SetPoint('CENTER', 0, p)
-end
 local focus = oUF:Spawn"focus"
-focus:SetPoint("CENTER", 0, f)
+focus:SetPoint("CENTER", 0, -500)
+local pet = oUF:Spawn'pet'
+pet:SetPoint('CENTER', 0, -450)
 local player = oUF:Spawn"player"
 player:SetPoint("CENTER", 0, -400)
 local target = oUF:Spawn"target"
