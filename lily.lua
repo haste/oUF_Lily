@@ -189,6 +189,7 @@ local func = function(self, unit)
 	ricon:SetTextColor(1, 1, 1)
 	self.RIcon = ricon
 	self:RegisterEvent("RAID_TARGET_UPDATE", updateRIcon)
+	table.insert(self.__elements, updateRIcon)
 
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("LEFT", ricon, "RIGHT", 0, -5)
