@@ -203,7 +203,7 @@ local func = function(self, unit)
 	if(not unit) then
 		local auras = CreateFrame("Frame", nil, self)
 		auras:SetHeight(hp:GetHeight() + pp:GetHeight())
-		auras:SetWidth(8*height)
+		auras:SetWidth(9*height)
 		auras:SetPoint("LEFT", self, "RIGHT")
 
 		auras.showDebuffType = true
