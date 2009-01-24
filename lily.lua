@@ -37,8 +37,6 @@ local updateName = function(self, event, unit)
 		if(r) then
 			self.Name:SetTextColor(r, g, b)
 		end
-
-		self.Name:SetText(UnitName(unit))
 	end
 end
 
@@ -79,17 +77,18 @@ local updateHealth = function(self, event, unit, bar, min, max)
 	end
 
 	bar:SetStatusBarColor(.25, .25, .35)
-	self:UNIT_NAME_UPDATE(event, unit)
+	updateName(self, event, unit)
 end
 
 local updatePower = function(self, event, unit, bar, min, max)
-	if(min == 0) then
+	self.Health:SetHeight(22)
+	if(min == 0 or max == 0 or not UnitIsConnected(unit)) then
 		bar.value:SetText()
+		bar:SetValue(0)
 	elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
 		bar:SetValue(0)
-	elseif(not UnitIsConnected(unit)) then
-		bar.value:SetText()
 	else
+		self.Health:SetHeight(20)
 		bar.value:SetFormattedText("%s | ", siValue(min))
 	end
 end
@@ -123,7 +122,7 @@ local func = function(self, unit)
 	hp:SetPoint"RIGHT"
 
 	local hpbg = hp:CreateTexture(nil, "BORDER")
-	hpbg:SetAllPoints(hp)
+	hpbg:SetAllPoints(self)
 	hpbg:SetTexture(0, 0, 0, .5)
 
 	local hpp = hp:CreateFontString(nil, "OVERLAY")
@@ -151,17 +150,12 @@ local func = function(self, unit)
 	pp:SetPoint"RIGHT"
 	pp:SetPoint("TOP", hp, "BOTTOM")
 
-	local ppbg = pp:CreateTexture(nil, "BORDER")
-	ppbg:SetAllPoints(pp)
-	ppbg:SetTexture(0, 0, 0, .5)
-
 	local ppp = pp:CreateFontString(nil, "OVERLAY")
 	ppp:SetPoint("RIGHT", hpp, "LEFT", 0, 0)
 	ppp:SetFontObject(GameFontNormalSmall)
 	ppp:SetTextColor(1, 1, 1)
 
 	pp.value = ppp
-	pp.bg = ppbg
 	self.Power = pp
 	self.PostUpdatePower = updatePower
 
@@ -182,6 +176,12 @@ local func = function(self, unit)
 	leader:SetTexture"Interface\\GroupFrame\\UI-Group-LeaderIcon"
 	self.Leader = leader
 
+	local masterlooter = self:CreateTexture(nil, 'OVERLAY')
+	masterlooter:SetHeight(16)
+	masterlooter:SetWidth(16)
+	masterlooter:SetPoint('LEFT', leader, 'RIGHT')
+	self.MasterLooter = masterlooter
+
 	local ricon = hp:CreateFontString(nil, "OVERLAY")
 	ricon:SetPoint("LEFT", 2, 4)
 	ricon:SetJustifyH"LEFT"
@@ -197,8 +197,9 @@ local func = function(self, unit)
 	name:SetJustifyH"LEFT"
 	name:SetFontObject(GameFontNormalSmall)
 	name:SetTextColor(1, 1, 1)
+	self:Tag(name, '[name][( | )cpoints]')
+
 	self.Name = name
-	self:RegisterEvent('UNIT_NAME_UPDATE', updateName)
 
 	if(not unit) then
 		local auras = CreateFrame("Frame", nil, self)
