@@ -57,6 +57,16 @@ local siValue = function(val)
 	end
 end
 
+local PostCastStart = function(self, event, unit, spell, spellrank, castid)
+	self.Name:SetText(spell)
+end
+
+local PostCastStop = function(self, event, unit)
+	-- Needed as we use it as a general update function.
+	if(unit ~= self.unit) then return end
+	self.Name:SetText(UnitName(unit))
+end
+
 local updateHealth = function(self, event, unit, bar, min, max)
 	if(UnitIsDead(unit)) then
 		bar:SetValue(0)
@@ -197,7 +207,6 @@ local func = function(self, unit)
 	name:SetJustifyH"LEFT"
 	name:SetFontObject(GameFontNormalSmall)
 	name:SetTextColor(1, 1, 1)
-	self:Tag(name, '[name][( | )cpoints]')
 
 	self.Name = name
 
@@ -252,6 +261,18 @@ local func = function(self, unit)
 
 	self:SetAttribute('initial-height', height)
 	self:SetAttribute('initial-width', width)
+
+
+	-- We inject our fake name element early in the cycle, in-case there is a
+	-- spell cast in progress on the unit we target.
+	self:RegisterEvent('UNIT_NAME_UPDATE', PostCastStop)
+	table.insert(self.__elements, 2, PostCastStop)
+
+	self.PostChannelStart = PostCastStart
+	self.PostCastStart = PostCastStart
+
+	self.PostCastStop = PostCastStop
+	self.PostChannelStop = PostCastStop
 
 	self.PostCreateAuraIcon = auraIcon
 
