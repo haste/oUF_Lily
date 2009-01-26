@@ -58,7 +58,7 @@ local siValue = function(val)
 end
 
 local PostCastStart = function(self, event, unit, spell, spellrank, castid)
-	self.Name:SetText(spell)
+	self.Name:SetText('×' .. spell)
 end
 
 local PostCastStop = function(self, event, unit)
