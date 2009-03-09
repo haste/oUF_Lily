@@ -169,15 +169,13 @@ local func = function(self, unit)
 	self.Power = pp
 	self.PostUpdatePower = updatePower
 
-	if(unit ~= 'targettarget') then
-		local cb = CreateFrame"StatusBar"
-		cb:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
-		cb:SetStatusBarColor(1, .25, .35, .5)
-		cb:SetParent(self)
-		cb:SetAllPoints(hp)
-		cb:SetToplevel(true)
-		self.Castbar = cb
-	end
+	local cb = CreateFrame"StatusBar"
+	cb:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
+	cb:SetStatusBarColor(1, .25, .35, .5)
+	cb:SetParent(self)
+	cb:SetAllPoints(hp)
+	cb:SetToplevel(true)
+	self.Castbar = cb
 
 	local leader = self:CreateTexture(nil, "OVERLAY")
 	leader:SetHeight(16)
