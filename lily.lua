@@ -302,5 +302,5 @@ local tot = oUF:Spawn"targettarget"
 tot:SetPoint("CENTER", 0, -300)
 local party = oUF:Spawn("header", "oUF_Party")
 party:SetPoint("TOPLEFT", 30, -30)
-party:SetManyAttributes("showParty", true, "yOffset", -25)
+party:SetManyAttributes("showParty", true, 'showPlayer', true, "yOffset", -25)
 party:Show()
