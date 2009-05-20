@@ -273,8 +273,6 @@ local func = function(self, unit)
 	self.PostChannelStop = PostCastStop
 
 	self.PostCreateAuraIcon = auraIcon
-
-	return self
 end
 
 oUF:RegisterStyle("Lily", func)
