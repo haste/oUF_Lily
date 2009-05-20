@@ -27,7 +27,7 @@ local updateName = function(self, event, unit)
 			local _, class = UnitClass(unit)
 			t = self.colors.class[class]
 		else
-			r, g, b = UnitSelectionColor(unit)
+			t = self.colors.reaction[UnitReaction(unit, "player")]
 		end
 
 		if(t) then
