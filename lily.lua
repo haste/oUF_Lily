@@ -50,7 +50,9 @@ local updateRIcon = function(self, event)
 end
 
 local siValue = function(val)
-	if(val >= 1e4) then
+	if(val >= 1e6) then
+		return ('%.1f'):format(val / 1e6):gsub('%.', 'm')
+	elseif(val >= 1e4) then
 		return ("%.1f"):format(val / 1e3):gsub('%.', 'k')
 	else
 		return val
