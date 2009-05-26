@@ -183,7 +183,6 @@ local func = function(self, unit)
 	leader:SetHeight(16)
 	leader:SetWidth(16)
 	leader:SetPoint("BOTTOM", hp, "TOP", 0, -5)
-	leader:SetTexture"Interface\\GroupFrame\\UI-Group-LeaderIcon"
 	self.Leader = leader
 
 	local masterlooter = self:CreateTexture(nil, 'OVERLAY')
