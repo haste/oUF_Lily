@@ -3,7 +3,7 @@
   without any conditions, unless such conditions are required by law.
 ---------------------------------------------------------------------------]]
 
-local height, width = 22, 220
+local TEXTURE = [[Interface\AddOns\oUF_Lily\textures\statusbar]]
 
 local menu = function(self)
 	local unit = self.unit:sub(1, -2)
@@ -13,6 +13,16 @@ local menu = function(self)
 		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self.id.."DropDown"], "cursor", 0, 0)
 	elseif(_G[cunit.."FrameDropDown"]) then
 		ToggleDropDownMenu(1, nil, _G[cunit.."FrameDropDown"], "cursor", 0, 0)
+	end
+end
+
+local siValue = function(val)
+	if(val >= 1e6) then
+		return ('%.1f'):format(val / 1e6):gsub('%.', 'm')
+	elseif(val >= 1e4) then
+		return ("%.1f"):format(val / 1e3):gsub('%.', 'k')
+	else
+		return val
 	end
 end
 
@@ -40,36 +50,7 @@ local updateName = function(self, event, unit)
 	end
 end
 
-local updateRIcon = function(self, event)
-	local index = GetRaidTargetIndex(self.unit)
-	if(index) then
-		self.RIcon:SetText(ICON_LIST[index].."22|t")
-	else
-		self.RIcon:SetText()
-	end
-end
-
-local siValue = function(val)
-	if(val >= 1e6) then
-		return ('%.1f'):format(val / 1e6):gsub('%.', 'm')
-	elseif(val >= 1e4) then
-		return ("%.1f"):format(val / 1e3):gsub('%.', 'k')
-	else
-		return val
-	end
-end
-
-local PostCastStart = function(self, event, unit, spell, spellrank, castid)
-	self.Name:SetText('×' .. spell)
-end
-
-local PostCastStop = function(self, event, unit)
-	-- Needed as we use it as a general update function.
-	if(unit ~= self.unit) then return end
-	self.Name:SetText(UnitName(unit))
-end
-
-local updateHealth = function(self, event, unit, bar, min, max)
+local OverrideUpdateHealth = function(self, event, unit, bar, min, max)
 	if(UnitIsDead(unit)) then
 		bar:SetValue(0)
 		bar.value:SetText"Dead"
@@ -89,10 +70,46 @@ local updateHealth = function(self, event, unit, bar, min, max)
 	end
 
 	bar:SetStatusBarColor(.25, .25, .35)
-	updateName(self, event, unit)
+	return updateName(self, event, unit)
 end
 
-local updatePower = function(self, event, unit, bar, min, max)
+local PostCastStart = function(self, event, unit, spell, spellrank, castid)
+	self.Name:SetText('×' .. spell)
+end
+
+local PostCastStop = function(self, event, unit)
+	-- Needed as we use it as a general update function.
+	if(unit ~= self.unit) then return end
+	self.Name:SetText(UnitName(unit))
+end
+
+local PostCreateAuraIcon = function(self, button)
+	local count = button.count
+	count:ClearAllPoints()
+	count:SetPoint"BOTTOM"
+
+	button.icon:SetTexCoord(.07, .93, .07, .93)
+end
+
+local PostUpdateAuraIcon
+do
+	local playerUnits = {
+		player = true,
+		pet = true,
+		vehicle = true,
+	}
+
+	PostUpdateAuraIcon = function(self, icons, unit, icon, index, offset, filter, isDebuff)
+		local texture = icon.icon
+		if(playerUnits[icon.owner]) then
+			texture:SetDesaturated(false)
+		else
+			texture:SetDesaturated(true)
+		end
+	end
+end
+
+local PostUpdatePower = function(self, event, unit, bar, min, max)
 	self.Health:SetHeight(22)
 	if(min == 0 or max == 0 or not UnitIsConnected(unit)) then
 		bar.value:SetText()
@@ -105,15 +122,75 @@ local updatePower = function(self, event, unit, bar, min, max)
 	end
 end
 
-local auraIcon = function(self, button)
-	local count = button.count
-	count:ClearAllPoints()
-	count:SetPoint"BOTTOM"
-
-	button.icon:SetTexCoord(.07, .93, .07, .93)
+local RAID_TARGET_UPDATE = function(self, event)
+	local index = GetRaidTargetIndex(self.unit)
+	if(index) then
+		self.RIcon:SetText(ICON_LIST[index].."22|t")
+	else
+		self.RIcon:SetText()
+	end
 end
 
-local func = function(self, unit)
+local UnitSpecific = {
+	player = function(self)
+	end,
+
+	pet = function(self)
+		self:RegisterEvent("UNIT_HAPPINESS", updateName)
+	end,
+
+	target = function(self)
+		local buffs = CreateFrame("Frame", nil, self)
+		buffs.initialAnchor = "BOTTOMRIGHT"
+		buffs["growth-x"] = "LEFT"
+		buffs:SetPoint("RIGHT", self, "LEFT")
+
+		buffs:SetHeight(22)
+		buffs:SetWidth(8 * 22)
+		buffs.num = 8
+		buffs.size = 22
+
+		self.Buffs = buffs
+
+		local debuffs = CreateFrame("Frame", nil, self)
+		debuffs:SetPoint("LEFT", self, "RIGHT")
+		debuffs.showDebuffType = true
+		debuffs.initialAnchor = "BOTTOMLEFT"
+	
+		debuffs:SetHeight(22)
+		debuffs:SetWidth(8 * 22)
+		debuffs.num = 8
+		debuffs.size = 22
+
+		self.Debuffs = debuffs
+
+		self.PostUpdateAuraIcon = PostUpdateAuraIcon
+	end,
+
+	party = function(self)
+		local hp, pp = self.Health, self.Power
+		local auras = CreateFrame("Frame", nil, self)
+		auras:SetHeight(hp:GetHeight() + pp:GetHeight())
+		auras:SetPoint("LEFT", self, "RIGHT")
+
+		auras.showDebuffType = true
+
+		auras:SetWidth(9 * 22)
+		auras.size = 22
+		auras.gap = true
+		auras.numBuffs = 4
+		auras.numDebuffs = 4
+
+		self.Auras = auras
+
+		self.Range = true
+		self.inRangeAlpha = 1
+		self.outsideRangeAlpha = .5
+	end,
+}
+UnitSpecific.focus = UnitSpecific.target
+
+local Shared = function(self, unit)
 	self.menu = menu
 
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
@@ -122,34 +199,33 @@ local func = function(self, unit)
 	self:RegisterForClicks"anyup"
 	self:SetAttribute("*type2", "menu")
 
-	local hp = CreateFrame"StatusBar"
-	hp:SetHeight(20)
-	hp:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
+	local hp = CreateFrame("StatusBar", nil, self)
+	hp:SetStatusBarTexture(TEXTURE)
 
 	hp.frequentUpdates = true
 
-	hp:SetParent(self)
 	hp:SetPoint"TOP"
 	hp:SetPoint"LEFT"
 	hp:SetPoint"RIGHT"
 
+	self.Health = hp
+
 	local hpbg = hp:CreateTexture(nil, "BORDER")
 	hpbg:SetAllPoints(self)
 	hpbg:SetTexture(0, 0, 0, .5)
+
+	hp.bg = hpbg
 
 	local hpp = hp:CreateFontString(nil, "OVERLAY")
 	hpp:SetPoint("RIGHT", -2, -1)
 	hpp:SetFontObject(GameFontNormalSmall)
 	hpp:SetTextColor(1, 1, 1)
 
-	hp.bg = hpbg
 	hp.value = hpp
-	self.Health = hp
-	self.OverrideUpdateHealth = updateHealth
 
-	local pp = CreateFrame"StatusBar"
+	local pp = CreateFrame("StatusBar", nil, self)
 	pp:SetHeight(2)
-	pp:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
+	pp:SetStatusBarTexture(TEXTURE)
 
 	pp.frequentUpdates = true
 	pp.colorTapping = true
@@ -162,33 +238,35 @@ local func = function(self, unit)
 	pp:SetPoint"RIGHT"
 	pp:SetPoint("TOP", hp, "BOTTOM")
 
+	self.Power = pp
+
 	local ppp = pp:CreateFontString(nil, "OVERLAY")
 	ppp:SetPoint("RIGHT", hpp, "LEFT", 0, 0)
 	ppp:SetFontObject(GameFontNormalSmall)
 	ppp:SetTextColor(1, 1, 1)
 
 	pp.value = ppp
-	self.Power = pp
-	self.PostUpdatePower = updatePower
 
-	local cb = CreateFrame"StatusBar"
-	cb:SetStatusBarTexture"Interface\\AddOns\\oUF_Lily\\textures\\statusbar"
+	local cb = CreateFrame("StatusBar", nil, self)
+	cb:SetStatusBarTexture(TEXTURE)
 	cb:SetStatusBarColor(1, .25, .35, .5)
-	cb:SetParent(self)
 	cb:SetAllPoints(hp)
 	cb:SetToplevel(true)
+
 	self.Castbar = cb
 
 	local leader = self:CreateTexture(nil, "OVERLAY")
 	leader:SetHeight(16)
 	leader:SetWidth(16)
 	leader:SetPoint("BOTTOM", hp, "TOP", 0, -5)
+
 	self.Leader = leader
 
 	local masterlooter = self:CreateTexture(nil, 'OVERLAY')
 	masterlooter:SetHeight(16)
 	masterlooter:SetWidth(16)
 	masterlooter:SetPoint('LEFT', leader, 'RIGHT')
+
 	self.MasterLooter = masterlooter
 
 	local ricon = hp:CreateFontString(nil, "OVERLAY")
@@ -196,9 +274,10 @@ local func = function(self, unit)
 	ricon:SetJustifyH"LEFT"
 	ricon:SetFontObject(GameFontNormalSmall)
 	ricon:SetTextColor(1, 1, 1)
+
 	self.RIcon = ricon
-	self:RegisterEvent("RAID_TARGET_UPDATE", updateRIcon)
-	table.insert(self.__elements, updateRIcon)
+	self:RegisterEvent("RAID_TARGET_UPDATE", RAID_TARGET_UPDATE)
+	table.insert(self.__elements, RAID_TARGET_UPDATE)
 
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("LEFT", ricon, "RIGHT", 0, -5)
@@ -209,58 +288,8 @@ local func = function(self, unit)
 
 	self.Name = name
 
-	if(not unit) then
-		local auras = CreateFrame("Frame", nil, self)
-		auras:SetHeight(hp:GetHeight() + pp:GetHeight())
-		auras:SetWidth(9*height)
-		auras:SetPoint("LEFT", self, "RIGHT")
-
-		auras.showDebuffType = true
-		auras.size = height
-		auras.gap = true
-		auras.numBuffs = 4
-		auras.numDebuffs = 4
-		self.Auras = auras
-	end
-
-	if(unit == "target") then
-		local buffs = CreateFrame("Frame", nil, self)
-		buffs:SetHeight(height)
-		buffs:SetWidth(8*height)
-		buffs.initialAnchor = "BOTTOMRIGHT"
-		buffs.num = 8
-		buffs["growth-x"] = "LEFT"
-		buffs:SetPoint("RIGHT", self, "LEFT")
-		buffs.size = height
-		self.Buffs = buffs
-	end
-
-	if(unit and not (unit == "targettarget" or unit == "player")) then
-		local debuffs = CreateFrame("Frame", nil, self)
-		debuffs:SetHeight(height)
-		debuffs:SetWidth(10*height)
-		debuffs:SetPoint("LEFT", self, "RIGHT")
-
-		debuffs.showDebuffType = true
-		debuffs.size = height
-		debuffs.initialAnchor = "BOTTOMLEFT"
-		debuffs.num = 8
-		self.Debuffs = debuffs
-	end
-
-	if(unit == 'pet') then
-		self:RegisterEvent("UNIT_HAPPINESS", updateName)
-	end
-
-	if(not unit) then
-		self.Range = true
-		self.inRangeAlpha = 1
-		self.outsideRangeAlpha = .5
-	end
-
-	self:SetAttribute('initial-height', height)
-	self:SetAttribute('initial-width', width)
-
+	self:SetAttribute('initial-height', 22)
+	self:SetAttribute('initial-width', 220)
 
 	-- We inject our fake name element early in the cycle, in-case there is a
 	-- spell cast in progress on the unit we target.
@@ -273,10 +302,20 @@ local func = function(self, unit)
 	self.PostCastStop = PostCastStop
 	self.PostChannelStop = PostCastStop
 
-	self.PostCreateAuraIcon = auraIcon
+	self.PostCreateAuraIcon = PostCreateAuraIcon
+
+	self.PostUpdatePower = PostUpdatePower
+
+	self.OverrideUpdateHealth = OverrideUpdateHealth
+
+	-- Small hack are always allowed...
+	local unit = unit or 'party'
+	if(UnitSpecific[unit]) then
+		return UnitSpecific[unit](self)
+	end
 end
 
-oUF:RegisterStyle("Lily", func)
+oUF:RegisterStyle("Lily", Shared)
 
 --[[
 -- oUF does to this for, but only for the first layout registered. I'm mainly
@@ -289,16 +328,12 @@ oUF:RegisterStyle("Lily", func)
 oUF:SetActiveStyle"Lily"
 
 -- :Spawn(unit, frame_name, isPet) --isPet is only used on headers.
-local focus = oUF:Spawn"focus"
-focus:SetPoint("CENTER", 0, -500)
-local pet = oUF:Spawn'pet'
-pet:SetPoint('CENTER', 0, -450)
-local player = oUF:Spawn"player"
-player:SetPoint("CENTER", 0, -400)
-local target = oUF:Spawn"target"
-target:SetPoint("CENTER", 0, -351)
-local tot = oUF:Spawn"targettarget"
-tot:SetPoint("CENTER", 0, -300)
+oUF:Spawn"focus":SetPoint("CENTER", 0, -500)
+oUF:Spawn'pet':SetPoint('CENTER', 0, -450)
+oUF:Spawn"player":SetPoint("CENTER", 0, -400)
+oUF:Spawn"target":SetPoint("CENTER", 0, -351)
+oUF:Spawn"targettarget":SetPoint("CENTER", 0, -300)
+
 local party = oUF:Spawn("header", "oUF_Party")
 party:SetPoint("TOPLEFT", 30, -30)
 party:SetManyAttributes("showParty", true, 'showPlayer', true, "yOffset", -25)
