@@ -132,9 +132,6 @@ local RAID_TARGET_UPDATE = function(self, event)
 end
 
 local UnitSpecific = {
-	player = function(self)
-	end,
-
 	pet = function(self)
 		self:RegisterEvent("UNIT_HAPPINESS", updateName)
 	end,
@@ -200,6 +197,7 @@ local Shared = function(self, unit)
 	self:SetAttribute("*type2", "menu")
 
 	local hp = CreateFrame("StatusBar", nil, self)
+	hp:SetHeight(20)
 	hp:SetStatusBarTexture(TEXTURE)
 
 	hp.frequentUpdates = true
