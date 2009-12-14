@@ -109,6 +109,36 @@ do
 	end
 end
 
+local CustomAuraFilter = function(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
+	local isPlayer
+
+	if(caster == 'player' or caster == 'vehicle') then
+		isPlayer = true
+	end
+
+	if((icons.onlyShowPlayer and isPlayer) or (not icons.onlyShowPlayer and name)) then
+		icon.isPlayer = isPlayer
+		icon.owner = caster
+
+		-- We set it to math.huge, because it lasts until cancelled.
+		if(timeLeft == 0) then
+			icon.timeLeft = math.huge
+		else
+			icon.timeLeft = timeLeft
+		end
+
+		return true
+	end
+end
+
+local sort = function(a, b)
+	return a.timeLeft > b.timeLeft
+end
+
+local PreAuraSetPosition = function(self, auras, max)
+	table.sort(auras, sort)
+end
+
 local PostUpdatePower = function(self, event, unit, bar, min, max)
 	self.Health:SetHeight(22)
 	if(min == 0 or max == 0 or not UnitIsConnected(unit)) then
@@ -132,6 +162,22 @@ local RAID_TARGET_UPDATE = function(self, event)
 end
 
 local UnitSpecific = {
+	player = function(self)
+		self.Runes = CreateFrame('Frame', nil, self)
+		self.Runes:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -1)
+		self.Runes:SetHeight(7)
+		self.Runes:SetWidth(230)
+		self.Runes.anchor = "TOPLEFT"
+		self.Runes.growth = "RIGHT"
+		self.Runes.height = 7
+		self.Runes.width = 230 / 6 - 0.85
+
+		for i = 1, 6 do
+			self.Runes[i] = CreateFrame("StatusBar", nil, self.Runes)
+			self.Runes[i]:SetStatusBarTexture(TEXTURE)
+		end
+
+	end,
 	pet = function(self)
 		self:RegisterEvent("UNIT_HAPPINESS", updateName)
 	end,
@@ -153,13 +199,16 @@ local UnitSpecific = {
 		debuffs:SetPoint("LEFT", self, "RIGHT")
 		debuffs.showDebuffType = true
 		debuffs.initialAnchor = "BOTTOMLEFT"
-	
+
 		debuffs:SetHeight(22)
 		debuffs:SetWidth(8 * 22)
 		debuffs.num = 8
 		debuffs.size = 22
 
 		self.Debuffs = debuffs
+
+		self.CustomAuraFilter = CustomAuraFilter
+		self.PreAuraSetPosition = PreAuraSetPosition
 
 		self.PostUpdateAuraIcon = PostUpdateAuraIcon
 	end,
