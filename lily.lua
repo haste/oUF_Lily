@@ -375,13 +375,14 @@ oUF:RegisterStyle("Lily", Shared)
 oUF:SetActiveStyle"Lily"
 
 -- :Spawn(unit, frame_name, isPet) --isPet is only used on headers.
-oUF:Spawn"focus":SetPoint("CENTER", 0, -500)
-oUF:Spawn'pet':SetPoint('CENTER', 0, -450)
-oUF:Spawn"player":SetPoint("CENTER", 0, -400)
-oUF:Spawn"target":SetPoint("CENTER", 0, -351)
-oUF:Spawn"targettarget":SetPoint("CENTER", 0, -300)
+local base = 100
+oUF:Spawn"focus":SetPoint("BOTTOM", 0, base + (40 * 1))
+oUF:Spawn'pet':SetPoint('BOTTOM', 0, base + (40 * 2))
+oUF:Spawn"player":SetPoint("BOTTOM", 0, base + (40 * 3))
+oUF:Spawn"target":SetPoint("BOTTOM", 0, base + (40 * 4))
+oUF:Spawn"targettarget":SetPoint("BOTTOM", 0, base + (40 * 5))
 
 local party = oUF:Spawn("header", "oUF_Party")
 party:SetPoint("TOPLEFT", 30, -30)
-party:SetManyAttributes("showParty", true, 'showPlayer', true, "yOffset", -25)
+party:SetManyAttributes("showParty", true, 'showPlayer', true, "yOffset", -20)
 party:Show()
