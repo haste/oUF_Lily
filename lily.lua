@@ -162,22 +162,6 @@ local RAID_TARGET_UPDATE = function(self, event)
 end
 
 local UnitSpecific = {
-	player = function(self)
-		self.Runes = CreateFrame('Frame', nil, self)
-		self.Runes:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -1)
-		self.Runes:SetHeight(7)
-		self.Runes:SetWidth(230)
-		self.Runes.anchor = "TOPLEFT"
-		self.Runes.growth = "RIGHT"
-		self.Runes.height = 7
-		self.Runes.width = 230 / 6 - 0.85
-
-		for i = 1, 6 do
-			self.Runes[i] = CreateFrame("StatusBar", nil, self.Runes)
-			self.Runes[i]:SetStatusBarTexture(TEXTURE)
-		end
-
-	end,
 	pet = function(self)
 		self:RegisterEvent("UNIT_HAPPINESS", updateName)
 	end,
