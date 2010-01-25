@@ -84,7 +84,7 @@ end
 local PostCastStop = function(self, event, unit)
 	-- Needed as we use it as a general update function.
 	if(unit ~= self.unit) then return end
-	self.Name:SetText(UnitName(unit))
+	self.Name:SetText(UnitName(self.realUnit or unit))
 end
 
 local PostCreateAuraIcon = function(self, button)
