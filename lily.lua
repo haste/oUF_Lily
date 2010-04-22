@@ -7,7 +7,7 @@ local TEXTURE = [[Interface\AddOns\oUF_Lily\textures\statusbar]]
 
 local menu = function(self)
 	local unit = self.unit:sub(1, -2)
-	local cunit = self.unit:gsub("(.)", string.upper, 1)
+	local cunit = self.unit:gsub("^%l", string.upper)
 
 	if(cunit == 'Vehicle') then
 		cunit = 'Pet'
@@ -28,6 +28,25 @@ local siValue = function(val)
 	else
 		return val
 	end
+end
+
+oUF.Tags['lily:health'] = function(unit)
+	if(not UnitIsConnected(unit) or UnitIsDead(unit) or UnitIsGhost(unit)) then return end
+
+	if(not UnitIsFriend('player', unit)) then
+		return siValue(min)
+	elseif(min ~= 0 and min ~= max) then
+		return '-' .. siValue(max - min)
+	else
+		return max
+	end
+end
+
+oUF.Tags['lily:power'] = function(unit)
+	local min, max = UnitPower(unit), UnitPowerMax(unit)
+	if(min == 0 or max == 0 or not UnitIsConnected(unit) or UnitIsDead(unit) or UnitIsGhost(unit)) then return end
+
+	return siValue(min)
 end
 
 local updateName = function(self, event, unit)
@@ -54,40 +73,32 @@ local updateName = function(self, event, unit)
 	end
 end
 
-local OverrideUpdateHealth = function(self, event, unit, bar, min, max)
+local PostUpdateHealth = function(health, unit, min, max)
 	if(UnitIsDead(unit)) then
-		bar:SetValue(0)
-		bar.value:SetText"Dead"
+		health:SetValue(0)
 	elseif(UnitIsGhost(unit)) then
-		bar:SetValue(0)
-		bar.value:SetText"Ghost"
-	elseif(not UnitIsConnected(unit)) then
-		bar.value:SetText"Offline"
-	else
-		if(not UnitIsFriend('player', unit)) then
-			bar.value:SetFormattedText('%s', siValue(min))
-		elseif(min ~= 0 and min ~= max) then
-			bar.value:SetFormattedText("-%s", siValue(max - min))
-		else
-			bar.value:SetText(max)
-		end
+		health:SetValue(0)
 	end
 
-	bar:SetStatusBarColor(.25, .25, .35)
-	return updateName(self, event, unit)
+	health:SetStatusBarColor(.25, .25, .35)
+	return updateName(health:GetParent(), event, unit)
 end
 
-local PostCastStart = function(self, event, unit, spell, spellrank, castid)
-	self.Name:SetText('×' .. spell)
+local PostCastStart = function(castbar, unit, spell, spellrank)
+	castbar:GetParent().Name:SetText('×' .. spell)
 end
 
-local PostCastStop = function(self, event, unit)
-	-- Needed as we use it as a general update function.
-	if(unit ~= self.unit) then return end
+local PostCastStop = function(castbar, unit)
+	local self = castbar:GetParent()
 	self.Name:SetText(UnitName(self.realUnit or unit))
 end
 
-local PostCreateAuraIcon = function(self, button)
+local PostCastStopUpdate = function(self, event, unit)
+	if(unit ~= self.unit) then return end
+	return PostCastStop(self.Castbar, unit)
+end
+
+local PostCreateIcon = function(auras, button)
 	local count = button.count
 	count:ClearAllPoints()
 	count:SetPoint"BOTTOM"
@@ -95,7 +106,7 @@ local PostCreateAuraIcon = function(self, button)
 	button.icon:SetTexCoord(.07, .93, .07, .93)
 end
 
-local PostUpdateAuraIcon
+local PostUpdateIcon
 do
 	local playerUnits = {
 		player = true,
@@ -103,7 +114,7 @@ do
 		vehicle = true,
 	}
 
-	PostUpdateAuraIcon = function(self, icons, unit, icon, index, offset, filter, isDebuff)
+	PostUpdateIcon = function(icons, unit, icon, index, offset, filter, isDebuff)
 		local texture = icon.icon
 		if(playerUnits[icon.owner]) then
 			texture:SetDesaturated(false)
@@ -113,46 +124,16 @@ do
 	end
 end
 
-local CustomAuraFilter = function(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
-	local isPlayer
-
-	if(caster == 'player' or caster == 'vehicle') then
-		isPlayer = true
-	end
-
-	if((icons.onlyShowPlayer and isPlayer) or (not icons.onlyShowPlayer and name)) then
-		icon.isPlayer = isPlayer
-		icon.owner = caster
-
-		-- We set it to math.huge, because it lasts until cancelled.
-		if(timeLeft == 0) then
-			icon.timeLeft = math.huge
-		else
-			icon.timeLeft = timeLeft
-		end
-
-		return true
-	end
-end
-
-local sort = function(a, b)
-	return a.timeLeft > b.timeLeft
-end
-
-local PreAuraSetPosition = function(self, auras, max)
-	table.sort(auras, sort)
-end
-
-local PostUpdatePower = function(self, event, unit, bar, min, max)
-	self.Health:SetHeight(22)
+local PostUpdatePower = function(power, unit, min, max)
+	local health = power:GetParent().Health
 	if(min == 0 or max == 0 or not UnitIsConnected(unit)) then
-		bar.value:SetText()
-		bar:SetValue(0)
+		power:SetValue(0)
+		health:SetHeight(22)
 	elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
-		bar:SetValue(0)
+		power:SetValue(0)
+		health:SetHeight(22)
 	else
-		self.Health:SetHeight(20)
-		bar.value:SetFormattedText("%s | ", siValue(min))
+		health:SetHeight(20)
 	end
 end
 
@@ -195,10 +176,11 @@ local UnitSpecific = {
 
 		self.Debuffs = debuffs
 
-		self.CustomAuraFilter = CustomAuraFilter
-		self.PreAuraSetPosition = PreAuraSetPosition
+		debuffs.PostCreateIcon = PostCreateIcon
+		debuffs.PostUpdateIcon = PostUpdateIcon
 
-		self.PostUpdateAuraIcon = PostUpdateAuraIcon
+		buffs.PostCreateIcon = PostCreateIcon
+		buffs.PostUpdateIcon = PostUpdateIcon
 	end,
 
 	party = function(self)
@@ -214,6 +196,8 @@ local UnitSpecific = {
 		auras.gap = true
 		auras.numBuffs = 4
 		auras.numDebuffs = 4
+
+		auras.PostCreateIcon = PostCreateIcon
 
 		self.Auras = auras
 
@@ -236,6 +220,7 @@ local Shared = function(self, unit)
 	local hp = CreateFrame("StatusBar", nil, self)
 	hp:SetHeight(20)
 	hp:SetStatusBarTexture(TEXTURE)
+	hp:GetStatusBarTexture():SetHorizTile(false)
 
 	hp.frequentUpdates = true
 
@@ -255,12 +240,14 @@ local Shared = function(self, unit)
 	hpp:SetPoint("RIGHT", -2, -1)
 	hpp:SetFontObject(GameFontNormalSmall)
 	hpp:SetTextColor(1, 1, 1)
+	self:Tag(hpp, '[dead][offline][lily:health]')
 
 	hp.value = hpp
 
 	local pp = CreateFrame("StatusBar", nil, self)
 	pp:SetHeight(2)
 	pp:SetStatusBarTexture(TEXTURE)
+	pp:GetStatusBarTexture():SetHorizTile(false)
 
 	pp.frequentUpdates = true
 	pp.colorTapping = true
@@ -279,6 +266,7 @@ local Shared = function(self, unit)
 	ppp:SetPoint("RIGHT", hpp, "LEFT", 0, 0)
 	ppp:SetFontObject(GameFontNormalSmall)
 	ppp:SetTextColor(1, 1, 1)
+	self:Tag(ppp, '[lily:power< | ]')
 
 	pp.value = ppp
 
@@ -287,6 +275,7 @@ local Shared = function(self, unit)
 	cb:SetStatusBarColor(1, .25, .35, .5)
 	cb:SetAllPoints(hp)
 	cb:SetToplevel(true)
+	cb:GetStatusBarTexture():SetHorizTile(false)
 
 	self.Castbar = cb
 
@@ -326,25 +315,18 @@ local Shared = function(self, unit)
 	self:SetAttribute('initial-height', 22)
 	self:SetAttribute('initial-width', 220)
 
-	-- We inject our fake name element early in the cycle, in-case there is a
-	-- spell cast in progress on the unit we target.
-	self:RegisterEvent('UNIT_NAME_UPDATE', PostCastStop)
-	table.insert(self.__elements, 2, PostCastStop)
+	self:RegisterEvent('UNIT_NAME_UPDATE', PostCastStopUpdate)
+	table.insert(self.__elements, PostCastStopUpdate)
 
-	self.PostChannelStart = PostCastStart
-	self.PostCastStart = PostCastStart
+	cb.PostChannelStart = PostCastStart
+	cb.PostCastStart = PostCastStart
 
-	self.PostCastStop = PostCastStop
-	self.PostChannelStop = PostCastStop
+	cb.PostCastStop = PostCastStop
+	cb.PostChannelStop = PostCastStop
 
-	self.PostCreateAuraIcon = PostCreateAuraIcon
+	hp.PostUpdate = PostUpdateHealth
+	pp.PostUpdate = PostUpdatePower
 
-	self.PostUpdatePower = PostUpdatePower
-
-	self.OverrideUpdateHealth = OverrideUpdateHealth
-
-	-- Small hack are always allowed...
-	local unit = unit or 'party'
 	if(UnitSpecific[unit]) then
 		return UnitSpecific[unit](self)
 	end
@@ -370,7 +352,5 @@ oUF:Spawn"player":SetPoint("BOTTOM", 0, base + (40 * 3))
 oUF:Spawn"target":SetPoint("BOTTOM", 0, base + (40 * 4))
 oUF:Spawn"targettarget":SetPoint("BOTTOM", 0, base + (40 * 5))
 
-local party = oUF:Spawn("header", "oUF_Party")
+local party = oUF:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true, 'yOffset', -20)
 party:SetPoint("TOPLEFT", 30, -30)
-party:SetManyAttributes("showParty", true, 'showPlayer', true, "yOffset", -20)
-party:Show()
