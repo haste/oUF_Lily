@@ -346,7 +346,6 @@ oUF:RegisterStyle("Lily", Shared)
 --]]
 oUF:SetActiveStyle"Lily"
 
--- :Spawn(unit, frame_name, isPet) --isPet is only used on headers.
 local base = 100
 oUF:Spawn"focus":SetPoint("BOTTOM", 0, base + (40 * 1))
 oUF:Spawn'pet':SetPoint('BOTTOM', 0, base + (40 * 2))
