@@ -41,6 +41,7 @@ oUF.Tags['lily:health'] = function(unit)
 		return max
 	end
 end
+oUF.TagEvents['lily:health'] = oUF.TagEvents.missinghp
 
 oUF.Tags['lily:power'] = function(unit)
 	local min, max = UnitPower(unit), UnitPowerMax(unit)
@@ -48,6 +49,7 @@ oUF.Tags['lily:power'] = function(unit)
 
 	return siValue(min)
 end
+oUF.TagEvents['lily:power'] = oUF.TagEvents.missingpp
 
 local updateName = function(self, event, unit)
 	if(self.unit == unit) then
