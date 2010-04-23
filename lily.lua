@@ -33,6 +33,7 @@ end
 oUF.Tags['lily:health'] = function(unit)
 	if(not UnitIsConnected(unit) or UnitIsDead(unit) or UnitIsGhost(unit)) then return end
 
+	local min, max = UnitHealth(unit), UnitHealthMax(unit)
 	if(not UnitIsFriend('player', unit)) then
 		return siValue(min)
 	elseif(min ~= 0 and min ~= max) then
