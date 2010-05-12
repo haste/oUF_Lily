@@ -185,8 +185,16 @@ local UnitSpecific = {
 		buffs.PostCreateIcon = PostCreateIcon
 		buffs.PostUpdateIcon = PostUpdateIcon
 	end,
+}
+UnitSpecific.focus = UnitSpecific.target
 
-	party = function(self)
+do
+	local range = {
+		insideAlpha = 1,
+		outsideAlpha = .5,
+	}
+
+	UnitSpecific.party = function(self)
 		local hp, pp = self.Health, self.Power
 		local auras = CreateFrame("Frame", nil, self)
 		auras:SetHeight(hp:GetHeight() + pp:GetHeight())
@@ -204,12 +212,9 @@ local UnitSpecific = {
 
 		self.Auras = auras
 
-		self.Range = true
-		self.inRangeAlpha = 1
-		self.outsideRangeAlpha = .5
-	end,
-}
-UnitSpecific.focus = UnitSpecific.target
+		self.Range = range
+	end
+end
 
 local Shared = function(self, unit)
 	self.menu = menu
@@ -354,5 +359,5 @@ oUF:Spawn"player":SetPoint("BOTTOM", 0, base + (40 * 3))
 oUF:Spawn"target":SetPoint("BOTTOM", 0, base + (40 * 4))
 oUF:Spawn"targettarget":SetPoint("BOTTOM", 0, base + (40 * 5))
 
-local party = oUF:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true, 'yOffset', -20)
+local party = oUF:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true--[[, 'showSolo', true]], 'yOffset', -20)
 party:SetPoint("TOPLEFT", 30, -30)
