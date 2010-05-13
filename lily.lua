@@ -350,14 +350,17 @@ oUF:RegisterStyle("Lily", Shared)
 --
 -- There is a possibility that another layout has been registered before yours.
 --]]
-oUF:SetActiveStyle"Lily"
 
-local base = 100
-oUF:Spawn"focus":SetPoint("BOTTOM", 0, base + (40 * 1))
-oUF:Spawn'pet':SetPoint('BOTTOM', 0, base + (40 * 2))
-oUF:Spawn"player":SetPoint("BOTTOM", 0, base + (40 * 3))
-oUF:Spawn"target":SetPoint("BOTTOM", 0, base + (40 * 4))
-oUF:Spawn"targettarget":SetPoint("BOTTOM", 0, base + (40 * 5))
+oUF:Factory(function(self)
+	self:SetActiveStyle"Lily"
 
-local party = oUF:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true--[[, 'showSolo', true]], 'yOffset', -20)
-party:SetPoint("TOPLEFT", 30, -30)
+	local base = 100
+	self:Spawn"focus":SetPoint("BOTTOM", 0, base + (40 * 1))
+	self:Spawn'pet':SetPoint('BOTTOM', 0, base + (40 * 2))
+	self:Spawn"player":SetPoint("BOTTOM", 0, base + (40 * 3))
+	self:Spawn"target":SetPoint("BOTTOM", 0, base + (40 * 4))
+	self:Spawn"targettarget":SetPoint("BOTTOM", 0, base + (40 * 5))
+
+	local party = self:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true--[[, 'showSolo', true]], 'yOffset', -20)
+	party:SetPoint("TOPLEFT", 30, -30)
+end)
