@@ -353,6 +353,6 @@ oUF:Factory(function(self)
 	self:Spawn"target":SetPoint("BOTTOM", 0, base + (40 * 4))
 	self:Spawn"targettarget":SetPoint("BOTTOM", 0, base + (40 * 5))
 
-	local party = self:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true--[[, 'showSolo', true]], 'yOffset', -20)
+	local party = self:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true, 'yOffset', -20)
 	party:SetPoint("TOPLEFT", 30, -30)
 end)
