@@ -76,23 +76,23 @@ local updateName = function(self, event, unit)
 	end
 end
 
-local PostUpdateHealth = function(health, unit, min, max)
+local PostUpdateHealth = function(Health, unit, min, max)
 	if(UnitIsDead(unit)) then
-		health:SetValue(0)
+		Health:SetValue(0)
 	elseif(UnitIsGhost(unit)) then
-		health:SetValue(0)
+		Health:SetValue(0)
 	end
 
-	health:SetStatusBarColor(.25, .25, .35)
-	return updateName(health:GetParent(), event, unit)
+	Health:SetStatusBarColor(.25, .25, .35)
+	return updateName(Health:GetParent(), event, unit)
 end
 
-local PostCastStart = function(castbar, unit, spell, spellrank)
-	castbar:GetParent().Name:SetText('×' .. spell)
+local PostCastStart = function(Castbar, unit, spell, spellrank)
+	Castbar:GetParent().Name:SetText('×' .. spell)
 end
 
-local PostCastStop = function(castbar, unit)
-	local self = castbar:GetParent()
+local PostCastStop = function(Castbar, unit)
+	local self = Castbar:GetParent()
 	self.Name:SetText(UnitName(self.realUnit or unit))
 end
 
@@ -101,7 +101,7 @@ local PostCastStopUpdate = function(self, event, unit)
 	return PostCastStop(self.Castbar, unit)
 end
 
-local PostCreateIcon = function(auras, button)
+local PostCreateIcon = function(Auras, button)
 	local count = button.count
 	count:ClearAllPoints()
 	count:SetPoint"BOTTOM"
@@ -127,16 +127,16 @@ do
 	end
 end
 
-local PostUpdatePower = function(power, unit, min, max)
-	local health = power:GetParent().Health
+local PostUpdatePower = function(Power, unit, min, max)
+	local Health = Power:GetParent().Health
 	if(min == 0 or max == 0 or not UnitIsConnected(unit)) then
-		power:SetValue(0)
-		health:SetHeight(22)
+		Power:SetValue(0)
+		Health:SetHeight(22)
 	elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
-		power:SetValue(0)
-		health:SetHeight(22)
+		Power:SetValue(0)
+		Health:SetHeight(22)
 	else
-		health:SetHeight(20)
+		Health:SetHeight(20)
 	end
 end
 
@@ -155,35 +155,35 @@ local UnitSpecific = {
 	end,
 
 	target = function(self)
-		local buffs = CreateFrame("Frame", nil, self)
-		buffs.initialAnchor = "BOTTOMRIGHT"
-		buffs["growth-x"] = "LEFT"
-		buffs:SetPoint("RIGHT", self, "LEFT")
+		local Buffs = CreateFrame("Frame", nil, self)
+		Buffs.initialAnchor = "BOTTOMRIGHT"
+		Buffs["growth-x"] = "LEFT"
+		Buffs:SetPoint("RIGHT", self, "LEFT")
 
-		buffs:SetHeight(22)
-		buffs:SetWidth(8 * 22)
-		buffs.num = 8
-		buffs.size = 22
+		Buffs:SetHeight(22)
+		Buffs:SetWidth(8 * 22)
+		Buffs.num = 8
+		Buffs.size = 22
 
-		self.Buffs = buffs
+		self.Buffs = Buffs
 
-		local debuffs = CreateFrame("Frame", nil, self)
-		debuffs:SetPoint("LEFT", self, "RIGHT")
-		debuffs.showDebuffType = true
-		debuffs.initialAnchor = "BOTTOMLEFT"
+		local Debuffs = CreateFrame("Frame", nil, self)
+		Debuffs:SetPoint("LEFT", self, "RIGHT")
+		Debuffs.showDebuffType = true
+		Debuffs.initialAnchor = "BOTTOMLEFT"
 
-		debuffs:SetHeight(22)
-		debuffs:SetWidth(8 * 22)
-		debuffs.num = 8
-		debuffs.size = 22
+		Debuffs:SetHeight(22)
+		Debuffs:SetWidth(8 * 22)
+		Debuffs.num = 8
+		Debuffs.size = 22
 
-		self.Debuffs = debuffs
+		self.Debuffs = Debuffs
 
-		debuffs.PostCreateIcon = PostCreateIcon
-		debuffs.PostUpdateIcon = PostUpdateIcon
+		Debuffs.PostCreateIcon = PostCreateIcon
+		Debuffs.PostUpdateIcon = PostUpdateIcon
 
-		buffs.PostCreateIcon = PostCreateIcon
-		buffs.PostUpdateIcon = PostUpdateIcon
+		Buffs.PostCreateIcon = PostCreateIcon
+		Buffs.PostUpdateIcon = PostUpdateIcon
 	end,
 }
 UnitSpecific.focus = UnitSpecific.target
@@ -195,22 +195,22 @@ do
 	}
 
 	UnitSpecific.party = function(self)
-		local hp, pp = self.Health, self.Power
-		local auras = CreateFrame("Frame", nil, self)
-		auras:SetHeight(hp:GetHeight() + pp:GetHeight())
-		auras:SetPoint("LEFT", self, "RIGHT")
+		local Health, Power = self.Health, self.Power
+		local Auras = CreateFrame("Frame", nil, self)
+		Auras:SetHeight(Health:GetHeight() + Power:GetHeight())
+		Auras:SetPoint("LEFT", self, "RIGHT")
 
-		auras.showDebuffType = true
+		Auras.showDebuffType = true
 
-		auras:SetWidth(9 * 22)
-		auras.size = 22
-		auras.gap = true
-		auras.numBuffs = 4
-		auras.numDebuffs = 4
+		Auras:SetWidth(9 * 22)
+		Auras.size = 22
+		Auras.gap = true
+		Auras.numBuffs = 4
+		Auras.numDebuffs = 4
 
-		auras.PostCreateIcon = PostCreateIcon
+		Auras.PostCreateIcon = PostCreateIcon
 
-		self.Auras = auras
+		self.Auras = Auras
 
 		self.Range = range
 	end
@@ -225,95 +225,95 @@ local Shared = function(self, unit)
 	self:RegisterForClicks"anyup"
 	self:SetAttribute("*type2", "menu")
 
-	local hp = CreateFrame("StatusBar", nil, self)
-	hp:SetHeight(20)
-	hp:SetStatusBarTexture(TEXTURE)
-	hp:GetStatusBarTexture():SetHorizTile(false)
+	local Health = CreateFrame("StatusBar", nil, self)
+	Health:SetHeight(20)
+	Health:SetStatusBarTexture(TEXTURE)
+	Health:GetStatusBarTexture():SetHorizTile(false)
 
-	hp.frequentUpdates = true
+	Health.frequentUpdates = true
 
-	hp:SetPoint"TOP"
-	hp:SetPoint"LEFT"
-	hp:SetPoint"RIGHT"
+	Health:SetPoint"TOP"
+	Health:SetPoint"LEFT"
+	Health:SetPoint"RIGHT"
 
-	self.Health = hp
+	self.Health = Health
 
-	local hpbg = hp:CreateTexture(nil, "BORDER")
-	hpbg:SetAllPoints(self)
-	hpbg:SetTexture(0, 0, 0, .5)
+	local HealthBackground = Health:CreateTexture(nil, "BORDER")
+	HealthBackground:SetAllPoints(self)
+	HealthBackground:SetTexture(0, 0, 0, .5)
 
-	hp.bg = hpbg
+	Health.bg = HealthBackground
 
-	local hpp = hp:CreateFontString(nil, "OVERLAY")
-	hpp:SetPoint("RIGHT", -2, -1)
-	hpp:SetFontObject(GameFontNormalSmall)
-	hpp:SetTextColor(1, 1, 1)
-	self:Tag(hpp, '[dead][offline][lily:health]')
+	local HealthPoints = Health:CreateFontString(nil, "OVERLAY")
+	HealthPoints:SetPoint("RIGHT", -2, -1)
+	HealthPoints:SetFontObject(GameFontNormalSmall)
+	HealthPoints:SetTextColor(1, 1, 1)
+	self:Tag(HealthPoints, '[dead][offline][lily:health]')
 
-	hp.value = hpp
+	Health.value = HealthPoints
 
-	local pp = CreateFrame("StatusBar", nil, self)
-	pp:SetHeight(2)
-	pp:SetStatusBarTexture(TEXTURE)
-	pp:GetStatusBarTexture():SetHorizTile(false)
+	local Power = CreateFrame("StatusBar", nil, self)
+	Power:SetHeight(2)
+	Power:SetStatusBarTexture(TEXTURE)
+	Power:GetStatusBarTexture():SetHorizTile(false)
 
-	pp.frequentUpdates = true
-	pp.colorTapping = true
-	pp.colorHappiness = true
-	pp.colorClass = true
-	pp.colorReaction = true
+	Power.frequentUpdates = true
+	Power.colorTaPowering = true
+	Power.colorHaPoweriness = true
+	Power.colorClass = true
+	Power.colorReaction = true
 
-	pp:SetParent(self)
-	pp:SetPoint"LEFT"
-	pp:SetPoint"RIGHT"
-	pp:SetPoint("TOP", hp, "BOTTOM")
+	Power:SetParent(self)
+	Power:SetPoint"LEFT"
+	Power:SetPoint"RIGHT"
+	Power:SetPoint("TOP", Health, "BOTTOM")
 
-	self.Power = pp
+	self.Power = Power
 
-	local ppp = pp:CreateFontString(nil, "OVERLAY")
-	ppp:SetPoint("RIGHT", hpp, "LEFT", 0, 0)
-	ppp:SetFontObject(GameFontNormalSmall)
-	ppp:SetTextColor(1, 1, 1)
-	self:Tag(ppp, '[lily:power< | ]')
+	local PowerPoints = Power:CreateFontString(nil, "OVERLAY")
+	PowerPoints:SetPoint("RIGHT", HealthPoints, "LEFT", 0, 0)
+	PowerPoints:SetFontObject(GameFontNormalSmall)
+	PowerPoints:SetTextColor(1, 1, 1)
+	self:Tag(PowerPoints, '[lily:power< | ]')
 
-	pp.value = ppp
+	Power.value = PowerPoints
 
-	local cb = CreateFrame("StatusBar", nil, self)
-	cb:SetStatusBarTexture(TEXTURE)
-	cb:SetStatusBarColor(1, .25, .35, .5)
-	cb:SetAllPoints(hp)
-	cb:SetToplevel(true)
-	cb:GetStatusBarTexture():SetHorizTile(false)
+	local Castbar = CreateFrame("StatusBar", nil, self)
+	Castbar:SetStatusBarTexture(TEXTURE)
+	Castbar:SetStatusBarColor(1, .25, .35, .5)
+	Castbar:SetAllPoints(Health)
+	Castbar:SetToplevel(true)
+	Castbar:GetStatusBarTexture():SetHorizTile(false)
 
-	self.Castbar = cb
+	self.Castbar = Castbar
 
-	local leader = self:CreateTexture(nil, "OVERLAY")
-	leader:SetHeight(16)
-	leader:SetWidth(16)
-	leader:SetPoint("BOTTOM", hp, "TOP", 0, -5)
+	local Leader = self:CreateTexture(nil, "OVERLAY")
+	Leader:SetHeight(16)
+	Leader:SetWidth(16)
+	Leader:SetPoint("BOTTOM", Health, "TOP", 0, -5)
 
-	self.Leader = leader
+	self.Leader = Leader
 
-	local masterlooter = self:CreateTexture(nil, 'OVERLAY')
-	masterlooter:SetHeight(16)
-	masterlooter:SetWidth(16)
-	masterlooter:SetPoint('LEFT', leader, 'RIGHT')
+	local MasterLooter = self:CreateTexture(nil, 'OVERLAY')
+	MasterLooter:SetHeight(16)
+	MasterLooter:SetWidth(16)
+	MasterLooter:SetPoint('LEFT', Leader, 'RIGHT')
 
-	self.MasterLooter = masterlooter
+	self.MasterLooter = MasterLooter
 
-	local ricon = hp:CreateFontString(nil, "OVERLAY")
-	ricon:SetPoint("LEFT", 2, 4)
-	ricon:SetJustifyH"LEFT"
-	ricon:SetFontObject(GameFontNormalSmall)
-	ricon:SetTextColor(1, 1, 1)
+	local RaidIcon = Health:CreateFontString(nil, "OVERLAY")
+	RaidIcon:SetPoint("LEFT", 2, 4)
+	RaidIcon:SetJustifyH"LEFT"
+	RaidIcon:SetFontObject(GameFontNormalSmall)
+	RaidIcon:SetTextColor(1, 1, 1)
 
-	self.RIcon = ricon
+	self.RIcon = RaidIcon
 	self:RegisterEvent("RAID_TARGET_UPDATE", RAID_TARGET_UPDATE)
 	table.insert(self.__elements, RAID_TARGET_UPDATE)
 
-	local name = hp:CreateFontString(nil, "OVERLAY")
-	name:SetPoint("LEFT", ricon, "RIGHT", 0, -5)
-	name:SetPoint("RIGHT", ppp, "LEFT")
+	local name = Health:CreateFontString(nil, "OVERLAY")
+	name:SetPoint("LEFT", RaidIcon, "RIGHT", 0, -5)
+	name:SetPoint("RIGHT", PowerPoints, "LEFT")
 	name:SetJustifyH"LEFT"
 	name:SetFontObject(GameFontNormalSmall)
 	name:SetTextColor(1, 1, 1)
@@ -326,14 +326,14 @@ local Shared = function(self, unit)
 	self:RegisterEvent('UNIT_NAME_UPDATE', PostCastStopUpdate)
 	table.insert(self.__elements, PostCastStopUpdate)
 
-	cb.PostChannelStart = PostCastStart
-	cb.PostCastStart = PostCastStart
+	Castbar.PostChannelStart = PostCastStart
+	Castbar.PostCastStart = PostCastStart
 
-	cb.PostCastStop = PostCastStop
-	cb.PostChannelStop = PostCastStop
+	Castbar.PostCastStop = PostCastStop
+	Castbar.PostChannelStop = PostCastStop
 
-	hp.PostUpdate = PostUpdateHealth
-	pp.PostUpdate = PostUpdatePower
+	Health.PostUpdate = PostUpdateHealth
+	Power.PostUpdate = PostUpdatePower
 
 	if(UnitSpecific[unit]) then
 		return UnitSpecific[unit](self)
@@ -342,16 +342,8 @@ end
 
 oUF:RegisterStyle("Lily", Shared)
 
---[[
--- oUF does to this for, but only for the first layout registered. I'm mainly
--- adding it here so people know about it, especially since it's required for
--- layouts using different styles between party/partypet/raid/raidpet. It is
--- however smart to execute this function regardless.
---
--- There is a possibility that another layout has been registered before yours.
---]]
-
 oUF:Factory(function(self)
+	-- Activate our style.
 	self:SetActiveStyle"Lily"
 
 	local base = 100
