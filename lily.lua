@@ -84,7 +84,7 @@ local PostUpdateHealth = function(Health, unit, min, max)
 	end
 
 	Health:SetStatusBarColor(.25, .25, .35)
-	return updateName(Health:GetParent(), event, unit)
+	return updateName(Health:GetParent(), 'PostUpdateHealth', unit)
 end
 
 local PostCastStart = function(Castbar, unit, spell, spellrank)
