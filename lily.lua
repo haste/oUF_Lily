@@ -344,9 +344,11 @@ end
 
 oUF:RegisterStyle("Lily", Shared)
 for unit,layout in next, UnitSpecific do
+	-- Capitalize the unit name, so it looks better.
 	oUF:RegisterStyle('Lily - ' .. unit:gsub("^%l", string.upper), layout)
 end
 
+-- A small helper to change the style into a unit specific, if it exists.
 local spawnHelper = function(self, unit, ...)
 	if(UnitSpecific[unit]) then
 		self:SetActiveStyle('Lily - ' .. unit:gsub("^%l", string.upper))
