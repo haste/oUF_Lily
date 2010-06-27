@@ -149,73 +149,6 @@ local RAID_TARGET_UPDATE = function(self, event)
 	end
 end
 
-local UnitSpecific = {
-	pet = function(self)
-		self:RegisterEvent("UNIT_HAPPINESS", updateName)
-	end,
-
-	target = function(self)
-		local Buffs = CreateFrame("Frame", nil, self)
-		Buffs.initialAnchor = "BOTTOMRIGHT"
-		Buffs["growth-x"] = "LEFT"
-		Buffs:SetPoint("RIGHT", self, "LEFT")
-
-		Buffs:SetHeight(22)
-		Buffs:SetWidth(8 * 22)
-		Buffs.num = 8
-		Buffs.size = 22
-
-		self.Buffs = Buffs
-
-		local Debuffs = CreateFrame("Frame", nil, self)
-		Debuffs:SetPoint("LEFT", self, "RIGHT")
-		Debuffs.showDebuffType = true
-		Debuffs.initialAnchor = "BOTTOMLEFT"
-
-		Debuffs:SetHeight(22)
-		Debuffs:SetWidth(8 * 22)
-		Debuffs.num = 8
-		Debuffs.size = 22
-
-		self.Debuffs = Debuffs
-
-		Debuffs.PostCreateIcon = PostCreateIcon
-		Debuffs.PostUpdateIcon = PostUpdateIcon
-
-		Buffs.PostCreateIcon = PostCreateIcon
-		Buffs.PostUpdateIcon = PostUpdateIcon
-	end,
-}
-UnitSpecific.focus = UnitSpecific.target
-
-do
-	local range = {
-		insideAlpha = 1,
-		outsideAlpha = .5,
-	}
-
-	UnitSpecific.party = function(self)
-		local Health, Power = self.Health, self.Power
-		local Auras = CreateFrame("Frame", nil, self)
-		Auras:SetHeight(Health:GetHeight() + Power:GetHeight())
-		Auras:SetPoint("LEFT", self, "RIGHT")
-
-		Auras.showDebuffType = true
-
-		Auras:SetWidth(9 * 22)
-		Auras.size = 22
-		Auras.gap = true
-		Auras.numBuffs = 4
-		Auras.numDebuffs = 4
-
-		Auras.PostCreateIcon = PostCreateIcon
-
-		self.Auras = Auras
-
-		self.Range = range
-	end
-end
-
 local Shared = function(self, unit)
 	self.menu = menu
 
@@ -334,25 +267,105 @@ local Shared = function(self, unit)
 
 	Health.PostUpdate = PostUpdateHealth
 	Power.PostUpdate = PostUpdatePower
+end
 
-	if(UnitSpecific[unit]) then
-		return UnitSpecific[unit](self)
+local UnitSpecific = {
+	pet = function(self)
+		Shared(self)
+
+		self:RegisterEvent("UNIT_HAPPINESS", updateName)
+	end,
+
+	target = function(self)
+		Shared(self)
+
+		local Buffs = CreateFrame("Frame", nil, self)
+		Buffs.initialAnchor = "BOTTOMRIGHT"
+		Buffs["growth-x"] = "LEFT"
+		Buffs:SetPoint("RIGHT", self, "LEFT")
+
+		Buffs:SetHeight(22)
+		Buffs:SetWidth(8 * 22)
+		Buffs.num = 8
+		Buffs.size = 22
+
+		self.Buffs = Buffs
+
+		local Debuffs = CreateFrame("Frame", nil, self)
+		Debuffs:SetPoint("LEFT", self, "RIGHT")
+		Debuffs.showDebuffType = true
+		Debuffs.initialAnchor = "BOTTOMLEFT"
+
+		Debuffs:SetHeight(22)
+		Debuffs:SetWidth(8 * 22)
+		Debuffs.num = 8
+		Debuffs.size = 22
+
+		self.Debuffs = Debuffs
+
+		Debuffs.PostCreateIcon = PostCreateIcon
+		Debuffs.PostUpdateIcon = PostUpdateIcon
+
+		Buffs.PostCreateIcon = PostCreateIcon
+		Buffs.PostUpdateIcon = PostUpdateIcon
+	end,
+}
+UnitSpecific.focus = UnitSpecific.target
+
+do
+	local range = {
+		insideAlpha = 1,
+		outsideAlpha = .5,
+	}
+
+	UnitSpecific.party = function(self)
+		Shared(self)
+
+		local Health, Power = self.Health, self.Power
+		local Auras = CreateFrame("Frame", nil, self)
+		Auras:SetHeight(Health:GetHeight() + Power:GetHeight())
+		Auras:SetPoint("LEFT", self, "RIGHT")
+
+		Auras.showDebuffType = true
+
+		Auras:SetWidth(9 * 22)
+		Auras.size = 22
+		Auras.gap = true
+		Auras.numBuffs = 4
+		Auras.numDebuffs = 4
+
+		Auras.PostCreateIcon = PostCreateIcon
+
+		self.Auras = Auras
+
+		self.Range = range
 	end
 end
 
 oUF:RegisterStyle("Lily", Shared)
+for unit,layout in next, UnitSpecific do
+	oUF:RegisterStyle('Lily - ' .. unit:gsub("^%l", string.upper), layout)
+end
+
+local spawnHelper = function(self, unit, ...)
+	if(UnitSpecific[unit]) then
+		self:SetActiveStyle('Lily - ' .. unit:gsub("^%l", string.upper))
+		self:Spawn(unit):SetPoint(...)
+	else
+		self:SetActiveStyle'Lily'
+		self:Spawn(unit):SetPoint(...)
+	end
+end
 
 oUF:Factory(function(self)
-	-- Activate our style.
-	self:SetActiveStyle"Lily"
-
 	local base = 100
-	self:Spawn"focus":SetPoint("BOTTOM", 0, base + (40 * 1))
-	self:Spawn'pet':SetPoint('BOTTOM', 0, base + (40 * 2))
-	self:Spawn"player":SetPoint("BOTTOM", 0, base + (40 * 3))
-	self:Spawn"target":SetPoint("BOTTOM", 0, base + (40 * 4))
-	self:Spawn"targettarget":SetPoint("BOTTOM", 0, base + (40 * 5))
+	spawnHelper(self, 'focus', "BOTTOM", 0, base + (40 * 1))
+	spawnHelper(self, 'pet', 'BOTTOM', 0, base + (40 * 2))
+	spawnHelper(self, 'player', 'BOTTOM', 0, base + (40 * 3))
+	spawnHelper(self, 'target', 'BOTTOM', 0, base + (40 * 4))
+	spawnHelper(self, 'targettarget', 'BOTTOM', 0, base + (40 * 5))
 
+	self:SetActiveStyle'Lily - Party'
 	local party = self:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true, 'yOffset', -20)
 	party:SetPoint("TOPLEFT", 30, -30)
 end)
