@@ -352,10 +352,14 @@ end
 local spawnHelper = function(self, unit, ...)
 	if(UnitSpecific[unit]) then
 		self:SetActiveStyle('Lily - ' .. unit:gsub("^%l", string.upper))
-		self:Spawn(unit):SetPoint(...)
+		local object = self:Spawn(unit)
+		object:SetPoint(...)
+		return object
 	else
 		self:SetActiveStyle'Lily'
-		self:Spawn(unit):SetPoint(...)
+		local object = self:Spawn(unit)
+		object:SetPoint(...)
+		return object
 	end
 end
 
