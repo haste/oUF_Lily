@@ -191,8 +191,8 @@ local Shared = function(self, unit)
 	Power:GetStatusBarTexture():SetHorizTile(false)
 
 	Power.frequentUpdates = true
-	Power.colorTaPowering = true
-	Power.colorHaPoweriness = true
+	Power.colorTapping = true
+	Power.colorHappiness = true
 	Power.colorClass = true
 	Power.colorReaction = true
 
