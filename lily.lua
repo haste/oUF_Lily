@@ -149,14 +149,15 @@ local RAID_TARGET_UPDATE = function(self, event)
 	end
 end
 
-local Shared = function(self, unit)
+local Shared = function(self, unit, isSingle)
 	self.menu = menu
 
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
 	self:SetScript("OnLeave", UnitFrame_OnLeave)
 
-	self:RegisterForClicks"anyup"
-	self:SetAttribute("*type2", "menu")
+	-- XXX: Change to AnyUp when RegisterAttributeDriver doesn't cause clicks
+	-- to get incorrectly eaten.
+	self:RegisterForClicks"AnyDown"
 
 	local Health = CreateFrame("StatusBar", nil, self)
 	Health:SetHeight(20)
@@ -253,8 +254,9 @@ local Shared = function(self, unit)
 
 	self.Name = name
 
-	self:SetAttribute('initial-height', 22)
-	self:SetAttribute('initial-width', 220)
+	if(isSingle) then
+		self:SetSize(220, 22)
+	end
 
 	self:RegisterEvent('UNIT_NAME_UPDATE', PostCastStopUpdate)
 	table.insert(self.__elements, PostCastStopUpdate)
@@ -270,14 +272,14 @@ local Shared = function(self, unit)
 end
 
 local UnitSpecific = {
-	pet = function(self)
-		Shared(self)
+	pet = function(self, ...)
+		Shared(self, ...)
 
 		self:RegisterEvent("UNIT_HAPPINESS", updateName)
 	end,
 
-	target = function(self)
-		Shared(self)
+	target = function(self, ...)
+		Shared(self, ...)
 
 		local Buffs = CreateFrame("Frame", nil, self)
 		Buffs.initialAnchor = "BOTTOMRIGHT"
@@ -318,8 +320,8 @@ do
 		outsideAlpha = .5,
 	}
 
-	UnitSpecific.party = function(self)
-		Shared(self)
+	UnitSpecific.party = function(self, ...)
+		Shared(self, ...)
 
 		local Health, Power = self.Health, self.Power
 		local Auras = CreateFrame("Frame", nil, self)
@@ -372,6 +374,13 @@ oUF:Factory(function(self)
 	spawnHelper(self, 'targettarget', 'BOTTOM', 0, base + (40 * 5))
 
 	self:SetActiveStyle'Lily - Party'
-	local party = self:SpawnHeader(nil, nil, 'raid,party,solo', 'showParty', true, 'showPlayer', true, 'yOffset', -20)
+	local party = self:SpawnHeader(
+		nil, nil, 'raid,party,solo',
+		'showParty', true, 'showPlayer', true, 'showSolo', true, 'yOffset', -20,
+		'oUF-initialConfigFunction', [[
+			self:SetHeight(22)
+			self:SetWidth(220)
+		]]
+	)
 	party:SetPoint("TOPLEFT", 30, -30)
 end)
