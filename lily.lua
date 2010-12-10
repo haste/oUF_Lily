@@ -323,6 +323,12 @@ do
 	UnitSpecific.party = function(self, ...)
 		Shared(self, ...)
 
+		local LFDRole = self:CreateTexture(nil, "OVERLAY")
+		LFDRole:SetSize(16, 16)
+		LFDRole:SetPoint("RIGHT", self, "LEFT", -3, 0)
+
+		self.LFDRole = LFDRole
+
 		local Health, Power = self.Health, self.Power
 		local Auras = CreateFrame("Frame", nil, self)
 		Auras:SetHeight(Health:GetHeight() + Power:GetHeight())
