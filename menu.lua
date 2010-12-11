@@ -1,6 +1,6 @@
 local name, addon = ...
 
-local dropdown = CreateFrame('Frame', 'oUF_LilyDropDown', UIParent, 'UIDropDownMenuTemplate')
+local dropdown = CreateFrame('Frame', name .. 'DropDown', UIParent, 'UIDropDownMenuTemplate')
 
 function addon:menu()
 	dropdown:SetParent(self)
