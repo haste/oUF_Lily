@@ -2,23 +2,9 @@
   Trond A Ekseth grants anyone the right to use this work for any purpose,
   without any conditions, unless such conditions are required by law.
 ---------------------------------------------------------------------------]]
+local name, addon = ...
 
 local TEXTURE = [[Interface\AddOns\oUF_Lily\textures\statusbar]]
-
-local menu = function(self)
-	local unit = self.unit:sub(1, -2)
-	local cunit = self.unit:gsub("^%l", string.upper)
-
-	if(cunit == 'Vehicle') then
-		cunit = 'Pet'
-	end
-
-	if(unit == "party" or unit == "partypet") then
-		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self.id.."DropDown"], "cursor", 0, 0)
-	elseif(_G[cunit.."FrameDropDown"]) then
-		ToggleDropDownMenu(1, nil, _G[cunit.."FrameDropDown"], "cursor", 0, 0)
-	end
-end
 
 local updateName = function(self, event, unit)
 	if(self.unit == unit) then
@@ -118,7 +104,7 @@ local RAID_TARGET_UPDATE = function(self, event)
 end
 
 local Shared = function(self, unit, isSingle)
-	self.menu = menu
+	self.menu = addon.menu
 
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
 	self:SetScript("OnLeave", UnitFrame_OnLeave)
