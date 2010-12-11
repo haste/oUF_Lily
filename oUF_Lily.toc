@@ -5,4 +5,5 @@
 ## Notes: oUF layout.
 ## Dependencies: oUF
 
+tags.lua
 lily.lua
