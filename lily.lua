@@ -284,9 +284,22 @@ do
 		self.LFDRole = LFDRole
 
 		local Health, Power = self.Health, self.Power
+
+		local Buffs = CreateFrame("Frame", nil, self)
+		Buffs:SetHeight(22)
+		Buffs:SetPoint("LEFT", self, "RIGHT")
+		Buffs:SetWidth(2 * 22)
+		Buffs.size = 22
+
+		Buffs.CustomFilter = addon.PartyBuffsCustomFilter
+		Buffs.PostUpdate = addon.PartyBuffsPostUpdate
+		Buffs.PostCreateIcon = PostCreateIcon
+
+		self.Buffs = Buffs
+
 		local Auras = CreateFrame("Frame", nil, self)
-		Auras:SetHeight(Health:GetHeight() + Power:GetHeight())
-		Auras:SetPoint("LEFT", self, "RIGHT")
+		Auras:SetHeight(22)
+		Auras:SetPoint("LEFT", Buffs, "RIGHT")
 
 		Auras.showDebuffType = true
 
@@ -296,6 +309,7 @@ do
 		Auras.numBuffs = 4
 		Auras.numDebuffs = 4
 
+		Auras.CustomFilter = addon.PartyAurasCustomFilter
 		Auras.PostCreateIcon = PostCreateIcon
 
 		self.Auras = Auras

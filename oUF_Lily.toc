@@ -7,4 +7,5 @@
 
 menu.lua
 tags.lua
+aurahandling.lua
 lily.lua
