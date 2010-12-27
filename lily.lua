@@ -149,7 +149,6 @@ local Shared = function(self, unit, isSingle)
 	Power.colorClass = true
 	Power.colorReaction = true
 
-	Power:SetParent(self)
 	Power:SetPoint"LEFT"
 	Power:SetPoint"RIGHT"
 	Power:SetPoint("TOP", Health, "BOTTOM")
