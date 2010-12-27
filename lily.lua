@@ -224,6 +224,22 @@ local Shared = function(self, unit, isSingle)
 end
 
 local UnitSpecific = {
+	player = function(self, ...)
+		Shared(self, ...)
+
+		local AltPowerBar = CreateFrame("StatusBar", nil, self)
+		AltPowerBar:SetHeight(2)
+		AltPowerBar:SetStatusBarTexture(TEXTURE)
+		AltPowerBar:GetStatusBarTexture():SetHorizTile(false)
+		AltPowerBar:SetStatusBarColor(1, 1, 1)
+
+		AltPowerBar:SetPoint"LEFT"
+		AltPowerBar:SetPoint"RIGHT"
+		AltPowerBar:SetPoint("BOTTOM", self.Health, "TOP")
+
+		self.AltPowerBar = AltPowerBar
+	end,
+
 	pet = function(self, ...)
 		Shared(self, ...)
 
