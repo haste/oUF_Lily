@@ -114,7 +114,6 @@ local Shared = function(self, unit, isSingle)
 	local Health = CreateFrame("StatusBar", nil, self)
 	Health:SetHeight(20)
 	Health:SetStatusBarTexture(TEXTURE)
-	Health:GetStatusBarTexture():SetHorizTile(false)
 
 	Health.frequentUpdates = true
 
@@ -141,7 +140,6 @@ local Shared = function(self, unit, isSingle)
 	local Power = CreateFrame("StatusBar", nil, self)
 	Power:SetHeight(2)
 	Power:SetStatusBarTexture(TEXTURE)
-	Power:GetStatusBarTexture():SetHorizTile(false)
 
 	Power.frequentUpdates = true
 	Power.colorTapping = true
@@ -168,7 +166,6 @@ local Shared = function(self, unit, isSingle)
 	Castbar:SetStatusBarColor(1, .25, .35, .5)
 	Castbar:SetAllPoints(Health)
 	Castbar:SetToplevel(true)
-	Castbar:GetStatusBarTexture():SetHorizTile(false)
 
 	self.Castbar = Castbar
 
@@ -229,7 +226,6 @@ local UnitSpecific = {
 		local AltPowerBar = CreateFrame("StatusBar", nil, self)
 		AltPowerBar:SetHeight(2)
 		AltPowerBar:SetStatusBarTexture(TEXTURE)
-		AltPowerBar:GetStatusBarTexture():SetHorizTile(false)
 		AltPowerBar:SetStatusBarColor(1, 1, 1)
 
 		AltPowerBar:SetPoint"LEFT"
