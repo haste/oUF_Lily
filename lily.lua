@@ -359,7 +359,7 @@ oUF:Factory(function(self)
 	self:SetActiveStyle'Lily - Party'
 	local party = self:SpawnHeader(
 		nil, nil, 'raid,party,solo',
-		'showParty', true, 'showPlayer', true, 'showSolo', true, 'yOffset', -20,
+		'showParty', true, 'showPlayer', true, --[['showSolo', true,]] 'yOffset', -20,
 		'oUF-initialConfigFunction', [[
 			self:SetHeight(22)
 			self:SetWidth(220)
