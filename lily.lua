@@ -52,7 +52,7 @@ local PostCastStop = function(Castbar, unit)
 	local name
 	if(unit:sub(1,4) == 'boss') then
 		-- And people complain about Lua's lack for full regexp support.
-		name = UnitName(unit):gsub('(%u)%S* [%l]*[^%S]*', '%1 ')
+		name = UnitName(unit):gsub('(%u)%S* %l*[^%S]*', '%1 ')
 	else
 		name = UnitName(unit)
 	end
