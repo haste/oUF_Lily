@@ -47,7 +47,17 @@ end
 
 local PostCastStop = function(Castbar, unit)
 	local self = Castbar:GetParent()
-	self.Name:SetText(UnitName(self.realUnit or unit))
+	local unit = self.realUnit or unit
+
+	local name
+	if(unit:sub(1,4) == 'boss') then
+		-- And people complain about Lua's lack for full regexp support.
+		name = UnitName(unit):gsub('(%u)%S* [%l]*[^%S]*', '%1 ')
+	else
+		name = UnitName(unit)
+	end
+
+	self.Name:SetText(name)
 end
 
 local PostCastStopUpdate = function(self, event, unit)
@@ -274,6 +284,18 @@ local UnitSpecific = {
 		Buffs.PostCreateIcon = PostCreateIcon
 		Buffs.PostUpdateIcon = PostUpdateIcon
 	end,
+
+	boss = function(self, ...)
+		Shared(self, ...)
+
+		self:Tag(self.Health.value, '[perhp] | [lily:health]')
+
+		-- Disable the power value, it isn't really importent.
+		self:Untag(self.Power.value)
+		self.Power.value:Hide()
+
+		self:SetWidth(140)
+	end,
 }
 UnitSpecific.focus = UnitSpecific.target
 
@@ -337,15 +359,15 @@ end
 local spawnHelper = function(self, unit, ...)
 	if(UnitSpecific[unit]) then
 		self:SetActiveStyle('Lily - ' .. unit:gsub("^%l", string.upper))
-		local object = self:Spawn(unit)
-		object:SetPoint(...)
-		return object
+	elseif(UnitSpecific[unit:match('[^%d]+')]) then -- boss1 -> boss
+		self:SetActiveStyle('Lily - ' .. unit:match('[^%d]+'):gsub("^%l", string.upper))
 	else
 		self:SetActiveStyle'Lily'
-		local object = self:Spawn(unit)
-		object:SetPoint(...)
-		return object
 	end
+
+	local object = self:Spawn(unit)
+	object:SetPoint(...)
+	return object
 end
 
 oUF:Factory(function(self)
@@ -355,6 +377,10 @@ oUF:Factory(function(self)
 	spawnHelper(self, 'player', 'BOTTOM', 0, base + (40 * 3))
 	spawnHelper(self, 'target', 'BOTTOM', 0, base + (40 * 4))
 	spawnHelper(self, 'targettarget', 'BOTTOM', 0, base + (40 * 5))
+
+	for n=1, 4 do
+		spawnHelper(self,'boss' .. n, 'TOPRIGHT', -10, -155 - (40 * n))
+	end
 
 	self:SetActiveStyle'Lily - Party'
 	local party = self:SpawnHeader(
