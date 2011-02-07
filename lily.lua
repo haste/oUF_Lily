@@ -46,9 +46,6 @@ local PostCastStart = function(Castbar, unit, spell, spellrank)
 end
 
 local PostCastStop = function(Castbar, unit)
-	local self = Castbar:GetParent()
-	local unit = self.realUnit or unit
-
 	local name
 	if(unit:sub(1,4) == 'boss') then
 		-- And people complain about Lua's lack for full regexp support.
@@ -57,7 +54,7 @@ local PostCastStop = function(Castbar, unit)
 		name = UnitName(unit)
 	end
 
-	self.Name:SetText(name)
+	Castbar:GetParent().Name:SetText(name)
 end
 
 local PostCastStopUpdate = function(self, event, unit)
