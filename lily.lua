@@ -11,8 +11,6 @@ local updateName = function(self, event, unit)
 		local r, g, b, t
 		if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
 			r, g, b = .6, .6, .6
-		elseif(unit == 'pet') then
-			t = self.colors.happiness[GetPetHappiness()]
 		elseif(UnitIsPlayer(unit)) then
 			local _, class = UnitClass(unit)
 			t = self.colors.class[class]
@@ -150,7 +148,6 @@ local Shared = function(self, unit, isSingle)
 
 	Power.frequentUpdates = true
 	Power.colorTapping = true
-	Power.colorHappiness = true
 	Power.colorClass = true
 	Power.colorReaction = true
 
