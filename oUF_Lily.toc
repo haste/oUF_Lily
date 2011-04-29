@@ -1,5 +1,5 @@
 ## Interface: 40100
-## Title: oUF_Lily
+## Title: oUF: Lily
 ## Author: Haste
 ## Version: 1.9
 ## Notes: oUF layout.
