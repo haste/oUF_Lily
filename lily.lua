@@ -209,6 +209,17 @@ local Shared = function(self, unit, isSingle)
 
 	self.Name = name
 
+	local AltPowerBar = CreateFrame("StatusBar", nil, self)
+	AltPowerBar:SetHeight(2)
+	AltPowerBar:SetStatusBarTexture(TEXTURE)
+	AltPowerBar:SetStatusBarColor(1, 1, 1)
+
+	AltPowerBar:SetPoint"LEFT"
+	AltPowerBar:SetPoint"RIGHT"
+	AltPowerBar:SetPoint("BOTTOM", self.Health, "TOP")
+
+	self.AltPowerBar = AltPowerBar
+
 	if(isSingle) then
 		self:SetSize(220, 22)
 	end
@@ -227,21 +238,6 @@ local Shared = function(self, unit, isSingle)
 end
 
 local UnitSpecific = {
-	player = function(self, ...)
-		Shared(self, ...)
-
-		local AltPowerBar = CreateFrame("StatusBar", nil, self)
-		AltPowerBar:SetHeight(2)
-		AltPowerBar:SetStatusBarTexture(TEXTURE)
-		AltPowerBar:SetStatusBarColor(1, 1, 1)
-
-		AltPowerBar:SetPoint"LEFT"
-		AltPowerBar:SetPoint"RIGHT"
-		AltPowerBar:SetPoint("BOTTOM", self.Health, "TOP")
-
-		self.AltPowerBar = AltPowerBar
-	end,
-
 	pet = function(self, ...)
 		Shared(self, ...)
 
@@ -382,7 +378,7 @@ oUF:Factory(function(self)
 	self:SetActiveStyle'Lily - Party'
 	local party = self:SpawnHeader(
 		nil, nil, 'raid,party,solo',
-		'showParty', true, 'showPlayer', true, --[['showSolo', true,]] 'yOffset', -20,
+		'showParty', true, 'showPlayer', true, 'showSolo', false, 'yOffset', -20,
 		'oUF-initialConfigFunction', [[
 			self:SetHeight(22)
 			self:SetWidth(220)
