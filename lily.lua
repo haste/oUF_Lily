@@ -235,12 +235,6 @@ local Shared = function(self, unit, isSingle)
 end
 
 local UnitSpecific = {
-	pet = function(self, ...)
-		Shared(self, ...)
-
-		self:RegisterEvent("UNIT_HAPPINESS", updateName)
-	end,
-
 	target = function(self, ...)
 		Shared(self, ...)
 
