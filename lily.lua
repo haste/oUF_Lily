@@ -35,7 +35,6 @@ local PostUpdateHealth = function(Health, unit, min, max)
 		Health:SetValue(0)
 	end
 
-	Health:SetStatusBarColor(.25, .25, .35)
 	return updateName(Health:GetParent(), 'PostUpdateHealth', unit)
 end
 
@@ -119,6 +118,7 @@ local Shared = function(self, unit, isSingle)
 	local Health = CreateFrame("StatusBar", nil, self)
 	Health:SetHeight(20)
 	Health:SetStatusBarTexture(TEXTURE)
+	Health:SetStatusBarColor(.25, .25, .25)
 
 	Health.frequentUpdates = true
 
