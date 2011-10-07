@@ -26,8 +26,6 @@ do
 	end
 
 	local PartyAurasCustomFilter = function(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
-		icon.owner = caster
-
 		if(caster == 'player' and prioTable[name]) then
 			return
 		end
