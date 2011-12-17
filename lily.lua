@@ -265,18 +265,20 @@ local UnitSpecific = {
 		Shared(self, ...)
 
 		local Buffs = CreateAura(self, 8)
-		Buffs.initialAnchor = "BOTTOMRIGHT"
-		Buffs["growth-x"] = "LEFT"
 		Buffs:ClearAllPoints()
 		Buffs:SetPoint("RIGHT", self, "LEFT")
 		Buffs:SetPoint('TOP')
 		Buffs:SetPoint('BOTTOM')
+
+		Buffs.initialAnchor = "BOTTOMRIGHT"
+		Buffs["growth-x"] = "LEFT"
 
 		Buffs.PostUpdateIcon = PostUpdateIcon
 
 		self.Buffs = Buffs
 
 		local Debuffs = CreateAura(self, 8)
+		Debuffs:SetPoint("LEFT", self, "RIGHT")
 		Debuffs.showDebuffType = true
 		Debuffs.PostUpdateIcon = PostUpdateIcon
 
@@ -317,6 +319,7 @@ do
 		local Buffs = CreateAura(self, 2)
 		Buffs:SetPoint("LEFT", self, "RIGHT")
 		Buffs.CustomFilter = addon.PartyBuffsCustomFilter
+		Buffs.PostUpdate = addon.PartyBuffsPostUpdate
 
 		self.Buffs = Buffs
 
