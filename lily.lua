@@ -110,10 +110,8 @@ end
 local CreateAura = function(self, num)
 	local size = 22
 	local Auras = CreateFrame("Frame", nil, self)
-	Auras:SetPoint('TOP')
-	Auras:SetPoint('BOTTOM')
 
-	Auras:SetWidth(num * size)
+	Auras:SetSize(num * size, size)
 	Auras.num = num
 	Auras.size = size
 
@@ -265,7 +263,6 @@ local UnitSpecific = {
 		Shared(self, ...)
 
 		local Buffs = CreateAura(self, 8)
-		Buffs:ClearAllPoints()
 		Buffs:SetPoint("RIGHT", self, "LEFT")
 		Buffs:SetPoint('TOP')
 		Buffs:SetPoint('BOTTOM')
@@ -375,7 +372,7 @@ oUF:Factory(function(self)
 	self:SetActiveStyle'Lily - Party'
 	local party = self:SpawnHeader(
 		nil, nil, 'raid,party,solo',
-		'showParty', true, 'showPlayer', true, 'showSolo', false, 'yOffset', -20,
+		'showParty', true, 'showPlayer', true, 'showSolo', true, 'yOffset', -20,
 		'oUF-initialConfigFunction', [[
 			self:SetHeight(22)
 			self:SetWidth(220)
