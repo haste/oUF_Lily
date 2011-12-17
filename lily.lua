@@ -87,10 +87,10 @@ end
 
 local PostUpdatePower = function(Power, unit, min, max)
 	local Health = Power:GetParent().Health
-	if(min == 0 or max == 0 or not UnitIsConnected(unit)) then
-		Power:SetValue(0)
-		Health:SetHeight(22)
-	elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
+	if(
+		min == 0 or max == 0 or not UnitIsConnected(unit) or
+		UnitIsDead(unit) or UnitIsGhost(unit)
+	) then
 		Power:SetValue(0)
 		Health:SetHeight(22)
 	else
