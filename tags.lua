@@ -8,7 +8,10 @@ local siValue = function(val)
 	end
 end
 
-oUF.Tags['lily:health'] = function(unit)
+local tags = oUF.Tags.Methods or oUF.Tags
+local tagevents = oUF.TagEvents or oUF.Tags.Events
+
+tags['lily:health'] = function(unit)
 	if(not UnitIsConnected(unit) or UnitIsDead(unit) or UnitIsGhost(unit)) then return end
 
 	local min, max = UnitHealth(unit), UnitHealthMax(unit)
@@ -20,12 +23,12 @@ oUF.Tags['lily:health'] = function(unit)
 		return max
 	end
 end
-oUF.TagEvents['lily:health'] = oUF.TagEvents.missinghp
+tagevents['lily:health'] = tagevents.missinghp
 
-oUF.Tags['lily:power'] = function(unit)
+tags['lily:power'] = function(unit)
 	local min, max = UnitPower(unit), UnitPowerMax(unit)
 	if(min == 0 or max == 0 or not UnitIsConnected(unit) or UnitIsDead(unit) or UnitIsGhost(unit)) then return end
 
 	return siValue(min)
 end
-oUF.TagEvents['lily:power'] = oUF.TagEvents.missingpp
+tagevents['lily:power'] = tagevents.missingpp
