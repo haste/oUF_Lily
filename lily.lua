@@ -107,6 +107,21 @@ local RAID_TARGET_UPDATE = function(self, event)
 	end
 end
 
+local CreateAura = function(self, num)
+	local size = 22
+	local Auras = CreateFrame("Frame", nil, self)
+	Auras:SetPoint('TOP')
+	Auras:SetPoint('BOTTOM')
+
+	Auras:SetWidth(num * size)
+	Auras.num = num
+	Auras.size = size
+
+	Auras.PostCreateIcon = PostCreateIcon
+
+	return Auras
+end
+
 local Shared = function(self, unit, isSingle)
 	self.menu = addon.menu
 
@@ -238,53 +253,34 @@ local UnitSpecific = {
 	player = function(self, ...)
 		Shared(self, ...)
 
-		local Debuffs = CreateFrame("Frame", nil, self)
+		local Debuffs = CreateAura(self, 4)
 		Debuffs:SetPoint("LEFT", self, "RIGHT")
 		Debuffs.showDebuffType = true
-		Debuffs.initialAnchor = "BOTTOMLEFT"
-
-		Debuffs:SetHeight(22)
-		Debuffs:SetWidth(4 * 22)
-		Debuffs.num = 4
-		Debuffs.size = 22
-
-		Debuffs.PostCreateIcon = PostCreateIcon
 		Debuffs.PostUpdateIcon = PostUpdateIcon
+
 		self.Debuffs = Debuffs
 	end,
 
 	target = function(self, ...)
 		Shared(self, ...)
 
-		local Buffs = CreateFrame("Frame", nil, self)
+		local Buffs = CreateAura(self, 8)
 		Buffs.initialAnchor = "BOTTOMRIGHT"
 		Buffs["growth-x"] = "LEFT"
+		Buffs:ClearAllPoints()
 		Buffs:SetPoint("RIGHT", self, "LEFT")
+		Buffs:SetPoint('TOP')
+		Buffs:SetPoint('BOTTOM')
 
-		Buffs:SetHeight(22)
-		Buffs:SetWidth(8 * 22)
-		Buffs.num = 8
-		Buffs.size = 22
+		Buffs.PostUpdateIcon = PostUpdateIcon
 
 		self.Buffs = Buffs
 
-		local Debuffs = CreateFrame("Frame", nil, self)
-		Debuffs:SetPoint("LEFT", self, "RIGHT")
+		local Debuffs = CreateAura(self, 8)
 		Debuffs.showDebuffType = true
-		Debuffs.initialAnchor = "BOTTOMLEFT"
-
-		Debuffs:SetHeight(22)
-		Debuffs:SetWidth(8 * 22)
-		Debuffs.num = 8
-		Debuffs.size = 22
-
-		self.Debuffs = Debuffs
-
-		Debuffs.PostCreateIcon = PostCreateIcon
 		Debuffs.PostUpdateIcon = PostUpdateIcon
 
-		Buffs.PostCreateIcon = PostCreateIcon
-		Buffs.PostUpdateIcon = PostUpdateIcon
+		self.Debuffs = Debuffs
 	end,
 
 	boss = function(self, ...)
@@ -310,40 +306,29 @@ do
 	UnitSpecific.party = function(self, ...)
 		Shared(self, ...)
 
+		local Health, Power = self.Health, self.Power
+
 		local LFDRole = self:CreateTexture(nil, "OVERLAY")
 		LFDRole:SetSize(16, 16)
 		LFDRole:SetPoint("RIGHT", self, "LEFT", -3, 0)
 
 		self.LFDRole = LFDRole
 
-		local Health, Power = self.Health, self.Power
-
-		local Buffs = CreateFrame("Frame", nil, self)
-		Buffs:SetHeight(22)
+		local Buffs = CreateAura(self, 2)
 		Buffs:SetPoint("LEFT", self, "RIGHT")
-		Buffs:SetWidth(2 * 22)
-		Buffs.size = 22
-
 		Buffs.CustomFilter = addon.PartyBuffsCustomFilter
-		Buffs.PostUpdate = addon.PartyBuffsPostUpdate
-		Buffs.PostCreateIcon = PostCreateIcon
 
 		self.Buffs = Buffs
 
-		local Auras = CreateFrame("Frame", nil, self)
-		Auras:SetHeight(22)
+		local Auras = CreateAura(self,  9)
 		Auras:SetPoint("LEFT", Buffs, "RIGHT")
 
 		Auras.showDebuffType = true
-
-		Auras:SetWidth(9 * 22)
-		Auras.size = 22
 		Auras.gap = true
 		Auras.numBuffs = 4
 		Auras.numDebuffs = 4
 
 		Auras.CustomFilter = addon.PartyAurasCustomFilter
-		Auras.PostCreateIcon = PostCreateIcon
 
 		self.Auras = Auras
 
