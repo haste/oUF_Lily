@@ -346,8 +346,8 @@ end
 local spawnHelper = function(self, unit, ...)
 	if(UnitSpecific[unit]) then
 		self:SetActiveStyle('Lily - ' .. unit:gsub("^%l", string.upper))
-	elseif(UnitSpecific[unit:match('[^%d]+')]) then -- boss1 -> boss
-		self:SetActiveStyle('Lily - ' .. unit:match('[^%d]+'):gsub("^%l", string.upper))
+	elseif(UnitSpecific[unit:match('%D+')]) then -- boss1 -> boss
+		self:SetActiveStyle('Lily - ' .. unit:match('%D+'):gsub("^%l", string.upper))
 	else
 		self:SetActiveStyle'Lily'
 	end
