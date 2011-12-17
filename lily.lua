@@ -148,7 +148,7 @@ local Shared = function(self, unit, isSingle)
 	Health.bg = HealthBackground
 
 	local HealthPoints = Health:CreateFontString(nil, "OVERLAY")
-	HealthPoints:SetPoint("RIGHT", -2, -1)
+	HealthPoints:SetPoint("RIGHT", -2, 0)
 	HealthPoints:SetFontObject(GameFontNormalSmall)
 	HealthPoints:SetTextColor(1, 1, 1)
 	self:Tag(HealthPoints, '[dead][offline][lily:health]')
@@ -211,7 +211,7 @@ local Shared = function(self, unit, isSingle)
 	table.insert(self.__elements, RAID_TARGET_UPDATE)
 
 	local name = Health:CreateFontString(nil, "OVERLAY")
-	name:SetPoint("LEFT", RaidIcon, "RIGHT", 0, -5)
+	name:SetPoint("LEFT", RaidIcon, "RIGHT", 0, -4)
 	name:SetPoint("RIGHT", PowerPoints, "LEFT")
 	name:SetJustifyH"LEFT"
 	name:SetFontObject(GameFontNormalSmall)
