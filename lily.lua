@@ -235,6 +235,24 @@ local Shared = function(self, unit, isSingle)
 end
 
 local UnitSpecific = {
+	player = function(self, ...)
+		Shared(self, ...)
+
+		local Debuffs = CreateFrame("Frame", nil, self)
+		Debuffs:SetPoint("LEFT", self, "RIGHT")
+		Debuffs.showDebuffType = true
+		Debuffs.initialAnchor = "BOTTOMLEFT"
+
+		Debuffs:SetHeight(22)
+		Debuffs:SetWidth(4 * 22)
+		Debuffs.num = 4
+		Debuffs.size = 22
+
+		Debuffs.PostCreateIcon = PostCreateIcon
+		Debuffs.PostUpdateIcon = PostUpdateIcon
+		self.Debuffs = Debuffs
+	end,
+
 	target = function(self, ...)
 		Shared(self, ...)
 
