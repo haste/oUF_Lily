@@ -4,6 +4,7 @@
 ---------------------------------------------------------------------------]]
 local name, addon = ...
 
+local _, CLASS = UnitClass'player'
 local TEXTURE = [[Interface\AddOns\oUF_Lily\textures\statusbar]]
 
 local updateName = function(self, event, unit)
@@ -242,6 +243,13 @@ end
 local UnitSpecific = {
 	player = function(self, ...)
 		Shared(self, ...)
+
+		local PowerPoints = self.Power.value
+		if(CLASS == 'WARLOCK') then
+			self:Tag(PowerPoints, '[soulshards< | ][lily:power< | ]')
+		elseif(CLASS == 'ROGUE') then
+			self:Tag(PowerPoints, '[cpoints< | ][lily:power< | ]')
+		end
 
 		local Debuffs = CreateAura(self, 4)
 		Debuffs:SetPoint("LEFT", self, "RIGHT")
