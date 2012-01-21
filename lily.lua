@@ -75,6 +75,14 @@ local PostCastStopUpdate = function(self, event, unit)
 	return PostCastStop(self.Castbar, unit)
 end
 
+local overlayProxy = function(overlay, ...)
+	overlay:GetParent().Border:SetColor(...)
+end
+
+local overlayHide = function(overlay)
+	overlay:GetParent().Border:SetColor(0, 0, 0, .9)
+end
+
 local PostCreateIcon = function(Auras, button)
 	local count = button.count
 	count:ClearAllPoints()
@@ -82,8 +90,14 @@ local PostCreateIcon = function(Auras, button)
 
 	button.icon:SetTexCoord(.07, .93, .07, .93)
 
+	-- XXX: Actually make a glow texture of auras.
 	addon.CreateBorder(button, [[Interface\AddOns\oUF_Lily\textures\glow]])
 	button.Border:SetColor(0, 0, 0, .9)
+	local overlay = button.overlay
+	overlay.SetVertexColor = overlayProxy
+	overlay:Hide()
+	overlay.Show = overlay.Hide
+	overlay.Hide = overlayHide
 end
 
 local PostUpdateIcon
