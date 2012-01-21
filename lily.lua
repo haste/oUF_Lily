@@ -91,9 +91,10 @@ local PostUpdatePower = function(Power, unit, min, max)
 		min == 0 or max == 0 or not UnitIsConnected(unit) or
 		UnitIsDead(unit) or UnitIsGhost(unit)
 	) then
-		Power:SetValue(0)
-		Health:SetHeight(22)
+		Power:Hide()
+		Health:SetHeight(23)
 	else
+		Power:Show()
 		Health:SetHeight(20)
 	end
 end
@@ -101,14 +102,14 @@ end
 local RAID_TARGET_UPDATE = function(self, event)
 	local index = GetRaidTargetIndex(self.unit)
 	if(index) then
-		self.RIcon:SetText(ICON_LIST[index].."22|t")
+		self.RIcon:SetText(ICON_LIST[index].."23|t")
 	else
 		self.RIcon:SetText()
 	end
 end
 
 local CreateAura = function(self, num)
-	local size = 22
+	local size = 23
 	local Auras = CreateFrame("Frame", nil, self)
 
 	Auras:SetSize(num * size, size)
@@ -156,7 +157,7 @@ local Shared = function(self, unit, isSingle)
 	Health.value = HealthPoints
 
 	local Power = CreateFrame("StatusBar", nil, self)
-	Power:SetHeight(2)
+	Power:SetHeight(3)
 	Power:SetStatusBarTexture(TEXTURE)
 
 	Power.frequentUpdates = true
@@ -231,7 +232,7 @@ local Shared = function(self, unit, isSingle)
 	self.AltPowerBar = AltPowerBar
 
 	if(isSingle) then
-		self:SetSize(220, 22)
+		self:SetSize(220, 23)
 	end
 
 	self:RegisterEvent('UNIT_NAME_UPDATE', PostCastStopUpdate)
@@ -374,7 +375,7 @@ oUF:Factory(function(self)
 		nil, nil, 'raid,party,solo',
 		'showParty', true, 'showPlayer', true, 'showSolo', true, 'yOffset', -20,
 		'oUF-initialConfigFunction', [[
-			self:SetHeight(22)
+			self:SetHeight(23)
 			self:SetWidth(220)
 		]]
 	)
