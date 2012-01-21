@@ -7,6 +7,11 @@ local name, addon = ...
 local _, CLASS = UnitClass'player'
 local TEXTURE = [[Interface\AddOns\oUF_Lily\textures\statusbar]]
 
+local HealthThresholds = {
+	WARLOCK = .2,
+	ROGUE = .35,
+}
+
 local updateName = function(self, event, unit)
 	if(self.unit == unit) then
 		local r, g, b, t
@@ -34,6 +39,16 @@ local PostUpdateHealth = function(Health, unit, min, max)
 		Health:SetValue(0)
 	elseif(UnitIsGhost(unit)) then
 		Health:SetValue(0)
+	end
+
+	local threshold = HealthThresholds[CLASS]
+	if(threshold) then
+		local Border = Health.__owner.Border
+		if(max > 0 and min > 0 and min/max <= threshold) then
+			Border:SetColor(.8, .1, .1, .9)
+		else
+			Border:SetColor(0, 0, 0, .9)
+		end
 	end
 
 	return updateName(Health:GetParent(), 'PostUpdateHealth', unit)
