@@ -142,11 +142,9 @@ local Shared = function(self, unit, isSingle)
 
 	self.Health = Health
 
-	local HealthBackground = Health:CreateTexture(nil, "BORDER")
-	HealthBackground:SetAllPoints(self)
-	HealthBackground:SetTexture(0, 0, 0, .5)
-
-	Health.bg = HealthBackground
+	local Background = Health:CreateTexture(nil, 'BORDER')
+	Background:SetTexture(0, 0, 0, .4)
+	Background:SetAllPoints()
 
 	local HealthPoints = Health:CreateFontString(nil, "OVERLAY")
 	HealthPoints:SetPoint("RIGHT", -2, 0)
@@ -170,6 +168,10 @@ local Shared = function(self, unit, isSingle)
 	Power:SetPoint("TOP", Health, "BOTTOM")
 
 	self.Power = Power
+
+	local Background = Power:CreateTexture(nil, 'BORDER')
+	Background:SetTexture(0, 0, 0, .4)
+	Background:SetAllPoints()
 
 	local PowerPoints = Power:CreateFontString(nil, "OVERLAY")
 	PowerPoints:SetPoint("RIGHT", HealthPoints, "LEFT", 0, 0)
