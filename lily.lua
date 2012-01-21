@@ -150,7 +150,7 @@ local Shared = function(self, unit, isSingle)
 	HealthPoints:SetPoint("RIGHT", -2, 0)
 	HealthPoints:SetFontObject(GameFontNormalSmall)
 	HealthPoints:SetTextColor(1, 1, 1)
-	self:Tag(HealthPoints, '[dead][offline][lily:health]')
+	self:Tag(HealthPoints, '[|cffc41f3b>dead<|r][|cff999999>offline<|r][lily:health]')
 
 	Health.value = HealthPoints
 
