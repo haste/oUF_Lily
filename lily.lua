@@ -222,17 +222,6 @@ local Shared = function(self, unit, isSingle)
 
 	self.Name = name
 
-	local AltPowerBar = CreateFrame("StatusBar", nil, self)
-	AltPowerBar:SetHeight(2)
-	AltPowerBar:SetStatusBarTexture(TEXTURE)
-	AltPowerBar:SetStatusBarColor(1, 1, 1)
-
-	AltPowerBar:SetPoint"LEFT"
-	AltPowerBar:SetPoint"RIGHT"
-	AltPowerBar:SetPoint("BOTTOM", self.Health, "TOP")
-
-	self.AltPowerBar = AltPowerBar
-
 	if(isSingle) then
 		self:SetSize(220, 23)
 	end
@@ -260,6 +249,21 @@ local UnitSpecific = {
 		Debuffs.PostUpdateIcon = PostUpdateIcon
 
 		self.Debuffs = Debuffs
+
+		local AltPowerBar = CreateFrame("StatusBar", nil, self)
+		AltPowerBar:SetHeight(3)
+		AltPowerBar:SetStatusBarTexture(TEXTURE)
+		AltPowerBar:SetStatusBarColor(1, 1, 1)
+
+		AltPowerBar:SetPoint"LEFT"
+		AltPowerBar:SetPoint"RIGHT"
+		AltPowerBar:SetPoint("TOP", self.Power, "BOTTOM")
+
+		self.AltPowerBar = AltPowerBar
+
+		local Background = AltPowerBar:CreateTexture(nil, 'BORDER')
+		Background:SetTexture(0, 0, 0, .4)
+		Background:SetAllPoints()
 	end,
 
 	target = function(self, ...)
