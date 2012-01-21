@@ -8,15 +8,23 @@ end
 
 local methods = {
 	Hide = function(self)
+		if(not self.__visible) then return end
+
 		for i=1,8 do
 			self[i]:Hide()
 		end
+
+		self.__visible = nil
 	end,
 
 	Show = function(self)
+		if(self.__visible) then return end
+
 		for i=1,8 do
 			self[i]:Show()
 		end
+
+		self.__visible = true
 	end,
 
 	SetColor = function(self, r, g, b, a)
@@ -120,7 +128,9 @@ local methods = {
 methods.__index = methods
 
 function addon.CreateBorder(self, texture)
-	local Border = setmetatable({}, methods)
+	local Border = setmetatable({
+		__visible = true,
+	}, methods)
 
 	for i=1,8 do
 		local T = self:CreateTexture(nil, 'BORDER')
