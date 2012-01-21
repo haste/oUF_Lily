@@ -130,6 +130,9 @@ local Shared = function(self, unit, isSingle)
 
 	self:RegisterForClicks"AnyUp"
 
+	addon.CreateBorder(self, [[Interface\AddOns\oUF_Lily\textures\glow]])
+	self.Border:SetColor(0, 0, 0, .9)
+
 	local Health = CreateFrame("StatusBar", nil, self)
 	Health:SetHeight(20)
 	Health:SetStatusBarTexture(TEXTURE)

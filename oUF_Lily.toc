@@ -8,4 +8,5 @@
 menu.lua
 tags.lua
 aurahandling.lua
+border.lua
 lily.lua
