@@ -18,10 +18,10 @@ do
 		local vb = buffs.visibleBuffs
 		if(vb > 0) then
 			parent.Auras:ClearAllPoints()
-			parent.Auras:SetPoint('LEFT', parent, 'RIGHT', (vb+1) * buffs.size, 0)
+			parent.Auras:SetPoint('LEFT', parent, 'RIGHT', (vb+1) * (buffs.size + 4), 0)
 		else
 			parent.Auras:ClearAllPoints()
-			parent.Auras:SetPoint('LEFT', parent, 'RIGHT')
+			parent.Auras:SetPoint('LEFT', parent, 'RIGHT', 4, 0)
 		end
 	end
 

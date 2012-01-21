@@ -81,6 +81,9 @@ local PostCreateIcon = function(Auras, button)
 	count:SetPoint"BOTTOM"
 
 	button.icon:SetTexCoord(.07, .93, .07, .93)
+
+	addon.CreateBorder(button, [[Interface\AddOns\oUF_Lily\textures\glow]])
+	button.Border:SetColor(0, 0, 0, .9)
 end
 
 local PostUpdateIcon
@@ -99,6 +102,15 @@ do
 			texture:SetDesaturated(true)
 		end
 	end
+end
+
+local PostUpdateGapIcon = function(Auras, unit, icon, visibleBuffs)
+	if(Auras.currentGap) then
+		Auras.currentGap.Border:Show()
+	end
+
+	icon.Border:Hide()
+	Auras.currentGap = icon
 end
 
 local PostUpdatePower = function(Power, unit, min, max)
@@ -128,9 +140,10 @@ local CreateAura = function(self, num)
 	local size = 23
 	local Auras = CreateFrame("Frame", nil, self)
 
-	Auras:SetSize(num * size, size)
+	Auras:SetSize(num * (size + 4), size)
 	Auras.num = num
 	Auras.size = size
+	Auras.spacing = 4
 
 	Auras.PostCreateIcon = PostCreateIcon
 
@@ -270,7 +283,7 @@ local UnitSpecific = {
 		end
 
 		local Debuffs = CreateAura(self, 4)
-		Debuffs:SetPoint("LEFT", self, "RIGHT")
+		Debuffs:SetPoint("LEFT", self, "RIGHT", 4, 0)
 		Debuffs.showDebuffType = true
 		Debuffs.PostUpdateIcon = PostUpdateIcon
 
@@ -296,7 +309,7 @@ local UnitSpecific = {
 		Shared(self, ...)
 
 		local Buffs = CreateAura(self, 8)
-		Buffs:SetPoint("RIGHT", self, "LEFT")
+		Buffs:SetPoint("RIGHT", self, "LEFT", -4, 0)
 		Buffs:SetPoint('TOP')
 		Buffs:SetPoint('BOTTOM')
 
@@ -308,7 +321,7 @@ local UnitSpecific = {
 		self.Buffs = Buffs
 
 		local Debuffs = CreateAura(self, 8)
-		Debuffs:SetPoint("LEFT", self, "RIGHT")
+		Debuffs:SetPoint("LEFT", self, "RIGHT", 4, 0)
 		Debuffs.showDebuffType = true
 		Debuffs.PostUpdateIcon = PostUpdateIcon
 
@@ -347,20 +360,21 @@ do
 		self.LFDRole = LFDRole
 
 		local Buffs = CreateAura(self, 2)
-		Buffs:SetPoint("LEFT", self, "RIGHT")
+		Buffs:SetPoint("LEFT", self, "RIGHT", 4, 0)
 		Buffs.CustomFilter = addon.PartyBuffsCustomFilter
 		Buffs.PostUpdate = addon.PartyBuffsPostUpdate
 
 		self.Buffs = Buffs
 
 		local Auras = CreateAura(self,  9)
-		Auras:SetPoint("LEFT", Buffs, "RIGHT")
+		Auras:SetPoint("LEFT", Buffs, "RIGHT", 4, 0)
 
 		Auras.showDebuffType = true
 		Auras.gap = true
 		Auras.numBuffs = 4
 		Auras.numDebuffs = 4
 
+		Auras.PostUpdateGapIcon = PostUpdateGapIcon
 		Auras.CustomFilter = addon.PartyAurasCustomFilter
 
 		self.Auras = Auras
