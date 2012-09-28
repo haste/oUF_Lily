@@ -119,6 +119,7 @@ local methods = {
 		Bottom:SetPoint('TOP', point, 'BOTTOM')
 		Bottom:SetPoint('LEFT')
 		Bottom:SetPoint('RIGHT')
+		Bottom:SetHeight(16)
 
 		local BottomLeft = self[8]
 		BottomLeft:SetPoint('TOPRIGHT', point, 'BOTTOMLEFT')
