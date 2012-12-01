@@ -335,6 +335,17 @@ local UnitSpecific = {
 
 		self.CPoints = CPoints
 
+		local ClassIcons = {}
+		for index = 1, 5 do
+			local Icon = self:CreateTexture(nil, 'BACKGROUND')
+
+			Icon:SetSize(16, 16)
+			Icon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * Icon:GetWidth(), 0)
+
+			ClassIcons[index] = Icon
+		end
+
+		self.ClassIcons = ClassIcons
 	end,
 
 	target = function(self, ...)
