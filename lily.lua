@@ -455,7 +455,7 @@ oUF:Factory(function(self)
 	spawnHelper(self, 'target', 'BOTTOM', 0, base + (40 * 4))
 	spawnHelper(self, 'targettarget', 'BOTTOM', 0, base + (40 * 5))
 
-	for n=1, 4 do
+	for n=1, MAX_BOSS_FRAMES or 5 do
 		spawnHelper(self,'boss' .. n, 'TOPRIGHT', -10, -155 - (40 * n))
 	end
 
