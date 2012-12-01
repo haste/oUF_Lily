@@ -1,4 +1,4 @@
-## Interface: 40200
+## Interface: 50100
 ## Title: oUF: Lily
 ## Author: Haste
 ## Version: 1.9
