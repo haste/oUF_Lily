@@ -317,6 +317,24 @@ local UnitSpecific = {
 		local Background = AltPowerBar:CreateTexture(nil, 'BORDER')
 		Background:SetTexture(0, 0, 0, .4)
 		Background:SetAllPoints()
+
+		local CPoints = {}
+		for index = 1, 5 do
+			local Icon = self:CreateTexture(nil, 'BACKGROUND')
+
+			Icon:SetTexCoord(0.45703125, 0.60546875, 0.44531250, 0.73437500)
+			Icon:SetTexture([[Interface\PlayerFrame\Priest-ShadowUI]])
+			Icon:SetDesaturated(true)
+			Icon:SetVertexColor(1, .96, .41)
+
+			Icon:SetSize(16, 16)
+			Icon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * Icon:GetWidth(), 0)
+
+			CPoints[index] = Icon
+		end
+
+		self.CPoints = CPoints
+
 	end,
 
 	target = function(self, ...)
