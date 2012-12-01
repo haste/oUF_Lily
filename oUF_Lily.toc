@@ -1,7 +1,7 @@
 ## Interface: 50100
 ## Title: oUF: Lily
 ## Author: Haste
-## Version: 1.9
+## Version: 1.10
 ## Notes: oUF layout.
 ## Dependencies: oUF
 
