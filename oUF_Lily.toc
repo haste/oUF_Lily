@@ -5,7 +5,6 @@
 ## Notes: oUF layout.
 ## Dependencies: oUF
 
-menu.lua
 tags.lua
 aurahandling.lua
 border.lua

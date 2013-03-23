@@ -165,8 +165,6 @@ local CreateAura = function(self, num)
 end
 
 local Shared = function(self, unit, isSingle)
-	self.menu = addon.menu
-
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
 	self:SetScript("OnLeave", UnitFrame_OnLeave)
 
