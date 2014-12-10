@@ -317,7 +317,7 @@ local UnitSpecific = {
 		Background:SetAllPoints()
 
 		local CPoints = {}
-		for index = 1, 5 do
+		for index = 1, 6 do
 			local Icon = self:CreateTexture(nil, 'BACKGROUND')
 
 			Icon:SetTexCoord(0.45703125, 0.60546875, 0.44531250, 0.73437500)
